@@ -1,0 +1,31 @@
+@import ../../styles/helpers
+
+.counter
+    flex-shrink: 0
+    display: flex
+    align-items: center
+    width: 104px
+
+.button
+    position: relative
+    top: -1px
+    flex-shrink: 0
+    width: 24px
+    svg
+        fill: $n5
+        transition: fill .2s
+    &:hover
+        svg
+            fill: $p1
+    &.disabled
+        pointer-events: none
+        svg
+            fill: $n6
+            +dark
+                fill: $n3
+
+.number
+    flex-grow: 1
+    padding: 0 12px
+    text-align: center
+    +body-bold-2 

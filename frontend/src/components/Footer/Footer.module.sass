@@ -1,0 +1,90 @@
+@import ../../styles/helpers
+
+.footer
+    border-top: 1px solid $n6
+    +dark
+        border-color: $n2
+
+.row
+    display: flex
+    padding: 80px 0 48px
+    +m
+        display: block
+        padding-top: 64px
+
+.col
+    &:first-child
+        display: flex
+        flex-direction: column
+        align-items: flex-start
+        width: 256px
+        +m
+            flex-direction: row
+            width: 100%
+            margin-bottom: 48px
+    &:nth-child(2)
+        flex-grow: 1
+        padding: 0 16px
+        +m
+            margin-bottom: 48px
+            padding: 0
+    &:nth-child(3)
+        width: 256px
+        +m
+            width: 100%
+
+.logo
+    margin: -8px 0 16px
+    +m
+        margin-right: auto
+
+.box
+    display: flex
+    align-items: center
+    +button-2
+    color: $n4
+    & > span
+        margin-right: 8px
+    svg
+        margin-right: 8px
+        fill: $n4
+
+.menu
+    display: flex
+    flex-wrap: wrap
+    margin-top: -32px
+    +m
+        margin: -32px -16px 0
+
+.link
+    flex: 0 0 calc(33.333% - 32px)
+    width: calc(33.333% - 32px)
+    margin: 32px 16px 0
+    +button-2
+    color: $n4
+    transition: color .2s
+    +t
+        flex: 0 0 calc(50% - 32px)
+        width: calc(50% - 32px)
+    &:hover
+        color: $n2
+        +dark
+            color: $n6
+    &:nth-child(3)
+        +t
+            order: 5
+
+.info
+    margin-bottom: 16px
+    +hairline-2
+
+.bottom
+    padding: 24px 0
+    border-top: 1px solid $n7
+    +dark
+        border-color: $n2
+
+.copyright
+    +caption-2
+    +dark
+        color: $n4

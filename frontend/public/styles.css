@@ -1,0 +1,17 @@
+noscript {
+    display: flex;
+    justify-content: center;
+}
+
+body {
+    background-color: #141416
+}
+
+noscript div{
+    position: absolute;
+    top: 50%;
+    color: #FCFCFD;
+    font-weight: 900;
+    font-family: 'Inter';
+    font-size: 20px;
+}

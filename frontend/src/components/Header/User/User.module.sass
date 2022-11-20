@@ -1,0 +1,117 @@
+@import ../../../styles/helpers
+
+.user
+    position: relative
+    +m
+        position: static
+    &.active
+        .body
+            visibility: visible
+            opacity: 1
+            transform: translateY(0)
+
+.head
+    width: 40px
+    height: 40px
+    -webkit-tap-highlight-color: rgba(0,0,0,0)
+    img
+        width: 100%
+        height: 100%
+        object-fit: cover
+        border-radius: 50%
+    
+.body
+    position: absolute
+    top: calc(100% + 32px)
+    right: -32px
+    width: 292px
+    padding: 16px
+    border-radius: 20px
+    box-shadow: 0px 40px 32px -8px rgba(15, 15, 15, 0.12)
+    background: $n8
+    visibility: hidden
+    opacity: 0
+    transform: translateY(10px)
+    transition: all .3s
+    +m
+        top: 100%
+        left: 16px
+        right: 16px
+        width: auto
+    +dark
+        background: $n1
+        box-shadow: 0px 10px 42px #17191f
+
+.group
+    margin-bottom: 16px
+
+.menu
+    &:not(:last-child)
+        margin-bottom: 16px
+        padding-bottom: 16px
+        border-bottom: 1px solid $n6
+        +dark
+            border-color: $n3
+
+.item
+    display: flex
+    align-items: center
+    padding: 0 20px
+    height: 48px
+    border-radius: 24px
+    +button-2
+    color: $n4
+    transition: all .2s
+    svg
+        margin-right: 12px
+        fill: $n4
+        transition: fill .2s
+    &:hover
+        color: $n2
+        svg
+            fill: $n2
+        +dark
+            color: $n6
+            svg
+                fill: $n6
+    &.active
+        background: $n2
+        color: $n6
+        svg
+            fill: $n6
+        +dark
+            background: $n8
+            color: $n3
+            svg
+                fill: $n3
+        
+.btns
+    display: flex
+    margin: 0 -4px
+
+.button
+    flex: 0 0 calc(50% - 8px)
+    width: calc(50% - 8px)
+    margin: 0 4px
+
+.login
+    font-family: 'Inter'
+    cursor: pointer
+    border-radius: 10px
+    width: 100%
+    padding: 10px
+    transition: background .6s
+    color: white
+    font-weight: 500
+    font-size: 14px
+    svg
+        margin-right: 5px
+        margin-bottom: 2px
+        fill: $white
+    &:hover
+        color: black
+        background: $n6
+        svg
+            fill: black
+    +m
+        margin-left: 20px

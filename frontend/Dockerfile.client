@@ -1,0 +1,26 @@
+# This Dockerfile builds the React front end for nginx.
+
+# docker build -f Dockerfile.client -t react-app-client .
+
+# Build step #1: build the React front end
+FROM node:18-alpine as build-step
+
+WORKDIR /abscond
+
+RUN apk add --update python3 make g++\
+   && rm -rf /var/cache/apk/*
+
+COPY package.json yarn.lock package-lock.json ./
+COPY ./src ./src
+COPY ./public ./public
+
+RUN npm i -g npm
+RUN npm install --legacy-peer-deps
+RUN yarn build
+
+# Build step #2: build an nginx container
+# FROM nginx:stable-alpine
+
+# COPY --from=build-step /abscond/build /usr/share/nginx/html
+# COPY deployment/nginx.default.conf /etc/nginx/conf.d/default.conf
+# COPY deployment/nginx.mimetypes /etc/nginx/mime.types

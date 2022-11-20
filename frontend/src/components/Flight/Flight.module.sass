@@ -1,0 +1,171 @@
+@import ../../styles/helpers
+
+.flight
+    display: flex
+    align-items: center
+    padding: 32px
+    border-radius: 24px
+    box-shadow: inset 0 0 0 1px $n6
+    transition: all .2s
+    +d
+        display: block
+        padding: 24px
+    &:hover
+        box-shadow: 0px 64px 64px -48px rgba(15, 15, 15, 0.08), inset 0 0 0 2px $n8
+        background: $n7
+    +dark
+        box-shadow: inset 0 0 0 1px $n3
+        &:hover
+            box-shadow: 0px 64px 64px -48px rgba(15, 15, 15, 0.08)
+            background: $n2
+    +m
+        padding: 16px
+        align-items: top
+        
+
+.item
+    display: flex
+    align-items: center
+    padding: 0 20px
+    +t
+        display: block
+    &:not(:last-child)
+        margin-bottom: 24px
+        +t
+            margin-bottom: 20px
+            padding-bottom: 20px
+            border-bottom: 1px solid $n6
+            +dark
+                border-color: $n3
+    +m
+        padding: 0
+        align-items: top
+            
+
+.logo
+    display: flex
+    justify-content: center
+    align-items: flex-start
+    flex-shrink: 0
+    width: 150px
+    height: 70px
+    +t
+        width: 100%
+        height: 60px
+        margin-bottom: 12px
+    img
+        max-width: 80%
+        max-height: 80%
+    +m
+        width: 190px
+
+.details
+    display: flex
+    align-items: center
+    flex-grow: 1
+    padding: 0 20px
+    +m
+        align-items: top
+        padding: 5px
+
+.box
+    width: 40%
+    flex-grow: 1
+    text-align: center
+    text-align: left
+    +m
+        width: 40%
+
+.boxright
+    width: 40%
+    flex-grow: 1
+    text-align: center
+    text-align: right
+    
+
+.title
+    margin-bottom: 3px
+    +body-bold-1
+
+.time
+    font-weight: 500
+    color: $n4
+    font-size: 11px
+
+.note
+    flex-shrink: 0
+    
+    padding: 8px 7px 0
+    border-top: 1px solid $n6
+    +caption-2
+    color: $n4
+    +dark
+        border-color: $n3
+    +m
+        padding: 2px 3px 0
+        font-size: 10px
+        width: 50px
+
+.wrap
+    flex-grow: 1
+
+.control
+    flex-shrink: 0
+    width: 180px
+    +x
+        width: 160px
+    +d
+        display: flex
+        align-items: center
+    +m
+        padding-top: 25px
+        align-items: center
+        flex-direction: column
+        margin: 0 auto
+        width: 100%
+
+
+.info
+    display: flex
+    align-items: center
+    margin-bottom: 12px
+    +caption-2
+    color: $n4
+    +d
+        margin: 0 auto 0 0
+    svg
+        margin-right: 4px
+        fill: $n4
+    +m
+        padding-bottom: 15px
+        margin: 0 auto
+
+.button
+    width: 100%
+    padding: 0 10px
+    
+    +d
+        flex-shrink: 0
+        width: 160px
+        margin-left: 24px
+    +m
+        width: 80%
+    &:hover
+        box-shadow: inset 0 0 0 1px $p1
+        background: $p1
+        color: $n8
+        .price
+            display: none
+        .more
+            display: inline-flex
+        +dark
+            box-shadow: inset 0 0 0 1px $p1
+            background: $p1
+
+.price
+    color: $p4
+
+.more
+    display: none
+    align-items: center
+    color: $n8

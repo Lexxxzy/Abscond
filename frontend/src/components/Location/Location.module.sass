@@ -1,0 +1,284 @@
+@import ../../styles/helpers
+
+.location
+    position: relative
+    height: 96px
+    overflow: hidden
+    +t
+        height: 64px
+    &.active
+        overflow: visible
+        z-index: 5
+        .head
+            width: 510px
+            box-shadow: 0px 32px 32px 0 rgba(15, 15, 15, 0.08)
+            background: $n8
+            +d
+                width: 420px
+            +t
+                width: 100%
+                box-shadow: none
+                background: none
+            +dark
+                background: $n1
+                +t
+                    background: none
+        .input
+            padding-right: 64px
+            +t
+                padding-right: 40px
+        .clear
+            visibility: visible
+            opacity: 1
+        .bodytop
+            visibility: visible
+            opacity: 1
+        .bodybottom
+            visibility: visible
+            opacity: 1
+.head
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    border-radius: 16px
+    user-select: none
+    transition: box-shadow .2s, background .2s
+
+.input
+    width: 100%
+    height: 100%
+    padding: 0 24px 24px 56px
+    border-radius: 16px
+    background: none
+    +text-overflow
+    +poppins
+    +body-bold-1
+    color: $n2
+    cursor: pointer
+    +d
+        padding-left: 48px
+        font-size: 18px
+    +t
+        padding: 0 24px 16px 0
+    +m
+        padding: 0 0 16px 32px
+    +placeholder
+        color: $n2
+    +dark
+        color: $n8
+        +placeholder
+            color: $n8
+
+.icon
+    position: absolute
+    top: 20px
+    left: 16px
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 32px
+    height: 32px
+    pointer-events: none
+    +d
+        left: 10px
+    +t
+        display: none
+    +m
+        top: 8px
+        left: 0
+        display: flex
+        width: 24px
+    svg
+        fill: $n5
+        +d
+            width: 20px
+            height: 20px
+
+.description
+    position: absolute
+    left: 56px
+    bottom: 20px
+    pointer-events: none
+    +body-2
+    color: $n4
+    +d
+        left: 48px
+        font-size: 14px
+    +t
+        bottom: 4px
+        left: 0
+    +m
+        left: 32px
+
+.clear
+    position: absolute
+    top: 20px
+    right: 20px
+    width: 32px
+    height: 32px
+    opacity: 0
+    visibility: hidden
+    +t
+        right: 8px
+        top: 8px
+    +m
+        right: 0
+    svg
+        fill: $n5
+        transition: fill .2s
+    &:hover
+        svg
+            fill: $p1
+
+.bodytop
+    position: absolute
+    left: 0
+    bottom: calc(100% + 16px)
+    width: 510px
+    padding: 8px
+    box-shadow: 0px 40px 32px -24px rgba(15, 15, 15, 0.12)
+    border-radius: 24px
+    background: $n8
+    visibility: hidden
+    opacity: 0
+    transition: all .2s
+    +d
+        width: 420px
+    +t
+        bottom: 100%
+        left: -16px
+        box-shadow: 0px 16px 32px rgba(15, 15, 15, 0.12)
+    +m
+        right: -16px
+        width: auto
+        padding: 8px
+    +dark
+        background: $n1
+
+.bodybottom
+    position: absolute
+    left: 0
+    top: calc(100% + 16px)
+    width: 510px
+    padding: 8px
+    box-shadow: 0px 40px 32px -24px rgba(15, 15, 15, 0.12)
+    border-radius: 24px
+    background: $n8
+    visibility: hidden
+    opacity: 0
+    transition: all .2s
+    +d
+        width: 420px
+    +t
+        bottom: 100%
+        left: -16px
+        box-shadow: 0px 16px 32px rgba(15, 15, 15, 0.12)
+    +m
+        right: -16px
+        width: auto
+        padding: 8px
+    +dark
+        background: $n1
+
+.list
+    max-height: 280px
+    overflow: auto
+    -ms-overflow-style: none
+    scrollbar-width: none
+    -webkit-overflow-scrolling: touch
+    +m
+        max-height: 222px 
+    &::-webkit-scrollbar
+        display: none
+
+.item
+    position: relative
+    display: flex
+    align-items: center
+    min-height: 56px
+    padding: 0 20px 0 48px
+    cursor: pointer
+    border-radius: 12px
+    +text-overflow
+    +body-bold-2
+    color: $n4
+    transition: all .2s
+    +d
+        min-height: 48px
+        font-size: 14px
+    +m
+        display: block
+        min-height: auto
+        padding: 8px
+    &:before
+        content: ""
+        position: absolute
+        top: 50%
+        left: 6px
+        width: 32px
+        height: 32px
+        transform: translateY(-50%)
+        border: 1px solid $n6
+        border-radius: 50%
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='M12.666 13.333c.368 0 .667-.298.667-.667S13.034 12 12.666 12s-.667.298-.667.667.299.667.667.667zm0 1.333a2 2 0 1 0 0-4 2 2 0 1 0 0 4zM10.333 2.667a1.67 1.67 0 0 0-1.667 1.667v7.333a3 3 0 1 1-6 0v-5c0-.368.298-.667.667-.667S4 6.298 4 6.667v5a1.67 1.67 0 0 0 1.667 1.667c.921 0 1.667-.746 1.667-1.667V4.333a3 3 0 1 1 6 0v4.333a.67.67 0 0 1-.667.667c-.368 0-.667-.298-.667-.667V4.333a1.67 1.67 0 0 0-1.667-1.667z' fill-rule='evenodd' fill='%23777e91'/%3E%3Cpath d='M2.759 1.654a.67.67 0 0 1 1.152 0l1.173 2.01a.67.67 0 0 1-.576 1.003H2.162a.67.67 0 0 1-.576-1.003l1.173-2.01z' fill='%23777e91'/%3E%3C/svg%3E") no-repeat 50% 50% / 16px auto
+        transition: all .2s
+        +m
+            display: none
+        +dark
+            border-color: $n3
+            background-color: $n2
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='M12.666 13.333c.368 0 .667-.298.667-.667S13.034 12 12.666 12s-.667.298-.667.667.299.667.667.667zm0 1.333a2 2 0 1 0 0-4 2 2 0 1 0 0 4zM10.333 2.667a1.67 1.67 0 0 0-1.667 1.667v7.333a3 3 0 1 1-6 0v-5c0-.368.298-.667.667-.667S4 6.298 4 6.667v5a1.67 1.67 0 0 0 1.667 1.667c.921 0 1.667-.746 1.667-1.667V4.333a3 3 0 1 1 6 0v4.333a.67.67 0 0 1-.667.667c-.368 0-.667-.298-.667-.667V4.333a1.67 1.67 0 0 0-1.667-1.667z' fill-rule='evenodd' fill='%23777e91'/%3E%3Cpath d='M2.759 1.654a.67.67 0 0 1 1.152 0l1.173 2.01a.67.67 0 0 1-.576 1.003H2.162a.67.67 0 0 1-.576-1.003l1.173-2.01z' fill='%23777E90'/%3E%3C/svg%3E")
+    &:hover
+        background: $n7
+        color: $n2
+        +dark
+            background: $n2
+            color: $n7
+            &:before
+                background-color: $n3
+
+.small
+    height: 72px
+    +t
+        height: 64px
+    .input
+        padding: 0 24px 0 64px
+        +d
+            padding: 0 24px 0 48px
+        +t
+            padding: 0 24px 0 0
+        +m
+            padding: 0 0 0 32px
+    .clear
+        bottom: 50%
+        transform: translateY(50%)
+    .icon
+        +m
+            bottom: 50%
+            transform: translateY(50%)
+    &.active
+        .input
+            padding: 0 64px 
+            +d
+                padding: 0 64px 0 48px
+            +t
+                padding: 0 48px 0 0
+            +m
+                padding: 0 40px 0 32px
+
+.bodyDown
+    .bodytop
+        bottom: calc(100% + 16px)
+        top: auto 
+        +m
+            bottom: 100%
+            top: auto
+
+    .bodybottom
+        bottom: calc(100% + 16px)
+        top: auto 
+        +m
+            bottom: 100%
+            top: auto

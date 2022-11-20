@@ -1,0 +1,42 @@
+@import ../../styles/helpers
+
+.wrapper
+    font-family: "Inter"
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr) ) 
+    grid-gap: 10px
+
+.country
+    padding: 20px
+
+.header
+    font-size: 20px
+    font-weight: 600
+
+
+.flag
+    position: relative
+    padding-right: 10px
+
+.cities
+    font-family: "Inter"
+    font-weight: 200
+    color: $n6
+
+.title
+    
+    font-family: "Inter"
+    text-align: center
+    font-weight: 900
+    font-size: 1.2rem
+    margin-bottom: 20px
+
+@keyframes focus-in-contract 
+	0% 
+		letter-spacing: 1em
+		filter: blur(12px)
+		opacity: 0
+	100% 
+		filter: blur(0)
+		opacity: 1
+	
