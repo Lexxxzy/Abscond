@@ -15,24 +15,28 @@ flaskbcrypt = Bcrypt(current_app)
 
 @tickets.route("/get")
 def get_tickets():
-    departureCity = request.args.get("departureCity", default="", type=str)
-    arrivalCity = request.args.get("arrivalCity", default="", type=str)
-    departurelDate = request.args.get("departurelDate", default="", type=str)
+    try:
+        departureCity = request.args.get("departureCity", default="", type=str)
+        arrivalCity = request.args.get("arrivalCity", default="", type=str)
+        departurelDate = request.args.get("departurelDate", default="", type=str)
+    except KeyError:
+        return {'error': 'All fiels must be filled'}, 400
+        
     arrivalDate = request.args.get("arrivalDate", default="", type=str)
 
     departureCity = departureCity.split(',')[0].strip()
     arrivalCity = arrivalCity.split(',')[0].strip()
-
-    depart_city_code = City.query.filter(
-        City.city_title.ilike(departureCity)).first()
-
-    arrival_city_code = City.query.filter(
-        City.city_title.ilike(arrivalCity)).first()
-
+    
     validation_result = validate_input(
-        departurelDate, arrivalDate)
+        departurelDate, arrivalDate, departureCity, arrivalCity)
 
     if validation_result == "ALL_VALID":
+        depart_city_code = City.query.filter(
+            City.city_title.ilike(departureCity)).first()
+
+        arrival_city_code = City.query.filter(
+            City.city_title.ilike(arrivalCity)).first()
+    
         searched_tickets = [
             {
                 "type": "Round",
@@ -150,6 +154,10 @@ def get_tickets():
 @tickets.route("/cities")
 def get_city():
     city = request.args.get("city", default="", type=str)
+    
+    if city==None or not city.isalpha():
+        return {"city": []}
+    
     search = "{}%".format(city)
 
     cities_filter = City.query.filter(

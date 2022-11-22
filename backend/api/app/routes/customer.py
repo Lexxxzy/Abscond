@@ -186,7 +186,11 @@ def check_user_email():
 
 @user.route("/check-user-pass", methods=["POST"])
 def check_user_pass():
-    password = request.json["password"]
+    try:
+        password = request.json["password"]
+    except KeyError:
+        return {'error': 'All fiels must be filled'}
+    
     res = password_check(password)
 
     return {"result": res}
@@ -194,9 +198,12 @@ def check_user_pass():
 
 @user.route("/register", methods=["POST"])
 def register_user():
-    email = request.json["email"]
-    password = request.json["password"]
-
+    try:
+        email = request.json["email"]
+        password = request.json["password"]
+    except KeyError:
+        return {'error': 'All fiels must be filled'}
+    
     # TODO: MAIL SERVER | OTP CODE CHECKING |
     validation_result = validate_account(email, password)
 
@@ -222,8 +229,12 @@ def register_user():
 
 @user.route('/login', methods=["POST"])
 def login_user():
-    email = request.json["email"]
-    password = request.json["password"]
+    try:
+        email = request.json["email"]
+        password = request.json["password"]
+    except KeyError:
+        return {'error': 'All fiels must be filled'}
+    
     user = User.query.filter_by(email=email).first()
 
     if user is None or not flaskbcrypt.check_password_hash(user.password, password):

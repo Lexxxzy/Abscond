@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
         <div className={styles.bottom}>
           <div className={styles.copyright}>
-            Copyright © 2022 LLC. All rights reserved
+            Copyright © 2022 LLC. Developed by <strong>abscond-dev@abscond.stf</strong>
           </div>
         </div>
       </div>
