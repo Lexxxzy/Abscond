@@ -3,6 +3,7 @@ dump.rdb
 ./frontend/.env
 ./backend/api/data
 *.sql
+*.rdb
 backend/dump.rdb
 +deployment
 +deployment/nginx.mimetypes

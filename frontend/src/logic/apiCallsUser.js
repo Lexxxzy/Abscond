@@ -5,7 +5,7 @@ const server = axios.create({
   withCredentials: true,
 });
 
-const serverIp = "https://10.126.12.145/api";
+const serverIp = "http://127.0.0.1:5000";
 
 export const isLoggedIn = async (dispatchAction) => {
   try {
