@@ -47,6 +47,8 @@ export const userSlice = createSlice(
             },
             logInSuccess: (state, action) => {
                 state.pending = false;
+                state.error = false;
+                state.errorText = "";
                 state.userInfo.isLogedIn = true;
                 state.userInfo.email = action.payload.email;
             },

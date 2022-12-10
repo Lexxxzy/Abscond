@@ -6,7 +6,6 @@ load_dotenv()
 
 class ApplicationConfig:
     SECRET_KEY = os.environ["SECRET_KEY"]
-    APPLICATION_ROOT = "/api"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
     SESSION_TYPE = "redis"

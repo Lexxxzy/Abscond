@@ -13,30 +13,39 @@ from datetime import datetime, timedelta
 tickets = Blueprint('tickets', __name__, url_prefix='/tickets')
 flaskbcrypt = Bcrypt(current_app)
 
+
 @tickets.route("/get")
 def get_tickets():
     try:
-        departureCity = request.args.get("departureCity", default="", type=str)
-        arrivalCity = request.args.get("arrivalCity", default="", type=str)
-        departurelDate = request.args.get("departurelDate", default="", type=str)
+        trip_type = request.args.get("tripType", default="", type=str)
+    except KeyError:
+        return {'error': 'Please, specify your trip type'}, 400
+
+    try:
+        departure_city = request.args.get(
+            "departureCity", default="", type=str)
+        arrival_city = request.args.get("arrivalCity", default="", type=str)
+        departurel_date = request.args.get(
+            "departurelDate", default="", type=str)
+
     except KeyError:
         return {'error': 'All fiels must be filled'}, 400
-        
+
     arrivalDate = request.args.get("arrivalDate", default="", type=str)
 
-    departureCity = departureCity.split(',')[0].strip()
-    arrivalCity = arrivalCity.split(',')[0].strip()
-    
+    departure_city = departure_city.split(',')[0].strip()
+    arrival_city = arrival_city.split(',')[0].strip()
+
     validation_result = validate_input(
-        departurelDate, arrivalDate, departureCity, arrivalCity)
+        departurel_date, arrivalDate, departure_city, arrival_city)
 
     if validation_result == "ALL_VALID":
         depart_city_code = City.query.filter(
-            City.city_title.ilike(departureCity)).first()
+            City.city_title.ilike(departure_city)).first()
 
         arrival_city_code = City.query.filter(
-            City.city_title.ilike(arrivalCity)).first()
-    
+            City.city_title.ilike(arrival_city)).first()
+
         searched_tickets = [
             {
                 "type": "Round",
@@ -82,7 +91,7 @@ def get_tickets():
                     one_way.append({
                         'price': '₽' + str(row.price),
                         'info': "Meals are included",
-                        'dateFrom': departurelDate,
+                        'dateFrom': departurel_date,
                         'logo': get_path_to_airline_logo(row.airline),
                         'flight_id': row.flight_id,
                         'directions': [
@@ -91,9 +100,9 @@ def get_tickets():
                                 'airportIdTo': row.arrival_airport,
                                 'flightLength': str(row.duration),
                                 'flightFrom': row.city_from,
-                                'cityFrom': departureCity,
+                                'cityFrom': departure_city,
                                 'flightTo': row.city_to,
-                                'cityTo': arrivalCity,
+                                'cityTo': arrival_city,
                                 'timeFlightFrom': str(row.departure_time),
                                 'timeFlightTo': str(row.arrival_time),
                             },
@@ -111,9 +120,9 @@ def get_tickets():
                             {
                                 'flightLength': row.duration,
                                 'flightFrom': row.city_from,
-                                'cityFrom': arrivalCity,
+                                'cityFrom': arrival_city,
                                 'flightTo': row.city_to,
-                                'cityTo': departureCity,
+                                'cityTo': departure_city,
                                 'timeFlightFrom': str(row.departure_time),
                                 'timeFlightTo': str(row.arrival_time),
                                 'airportIdFrom': row.departure_airport,
@@ -154,17 +163,18 @@ def get_tickets():
 @tickets.route("/cities")
 def get_city():
     city = request.args.get("city", default="", type=str)
-    
-    if city==None or not city.isalpha():
+
+    if city == None or not city.isalpha():
         return {"city": []}
-    
+
     search = "{}%".format(city)
 
     cities_filter = City.query.filter(
         City.city_title.ilike(search)).order_by(City.city_title.asc()).limit(5).all()
 
     if (cities_filter == []):
-        cities_filter = City.query.filter(City.city_code.ilike(search)).order_by(City.city_code.asc()).limit(5).all()
+        cities_filter = City.query.filter(City.city_code.ilike(
+            search)).order_by(City.city_code.asc()).limit(5).all()
 
     return {"city": cities_filter}
 
@@ -314,17 +324,17 @@ def buy_ticket():
 #     for country in countries_from_db:
 #         cities_in_country = db.session.query(City).filter_by(country=country.country).all()
 #         cities_temp = []
-        
+
 #         for city in cities_in_country:
 #             cities_temp.append(city.city_title)
-            
-#         cities.append({city.country: 
+
+#         cities.append({city.country:
 #             {
 #                 "cities": cities_temp,
 #                 "logo": get_country_flag_path(country.country),
 #             }
 #         })
-        
+
 #         cities_temp = []
 
 #     return jsonify( cities)

@@ -1,26 +1,36 @@
-import React, { useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import cn from "classnames";
 import styles from "./Login.module.sass";
-import Icon from "../Icon";
 import TextInput from "../TextInput";
-import { INITIAL_STATE, signReducer } from "./signReducer";
+import { INITIAL_STATE, INITIAL_STATE_MANAGEMENT, signReducer } from "./signReducer";
 import { checkEmail, checkPassword, logUserIn, registerUser } from "../../logic/apiCallsUser";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import Snackbar, { SnackbarType } from "../Snackbar";
 import { useNavigate } from "react-router-dom";
+import DropdownWithSearch from "../DropdownWithSearch";
+import { getAirlines, loginManager, registerManager } from "../../logic/apiCallsDashboard";
 
-const Login = (isFromTickets) => {
+
+const Login = ({ isFromTickets, isFromManagement = false }) => {
   const [account, setAccount] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    name: '',
+    surname: ''
   });
 
-  const [state, dispatch] = useReducer(signReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(signReducer, isFromManagement === true ? INITIAL_STATE_MANAGEMENT : INITIAL_STATE);
   const { pending, error, errorText } = useSelector((state) => state.user)
+  const { managerPending, managerError, managerErrorText } = useSelector((state) => state.manager)
   const [isAllValid, setIsAllValid] = useState(true)
   const dispatchAction = useDispatch();
+
+  const [airlines, setAirlines] = useState([]);
+  const [selectedAirline, selectAirline] = useState({});
+  const [dropdownAirlineSearch, setDropdownAirlineSearch] = useState("");
+  const [pendingAirlines, setPendingAirlines] = useState();
 
   const onInputChange = e => {
     const { name, value } = e.target;
@@ -33,7 +43,7 @@ const Login = (isFromTickets) => {
 
   const handleSubmitEmail = (async () => {
     validateInput("email");
-    const isValid = await checkEmail(account.email, dispatchAction);
+    const isValid = await checkEmail(account.email, dispatchAction, isFromManagement);
 
     if (isValid) {
       dispatch({ type: "CONFIRMATION" })
@@ -42,9 +52,18 @@ const Login = (isFromTickets) => {
 
   const handleSubmitPassword = (async () => {
     const isValid = await checkPassword(account.password, dispatchAction);
+
     validateInput("password")
     // NO OTP
-    registerUser(account.email, account.password, dispatchAction, isFromTickets, navigate);
+    if (isValid) {
+      if (isFromManagement) {
+        registerManager(account.email, account.password, account.name, account.surname, selectedAirline, dispatch, dispatchAction);
+
+      } else {
+        registerUser(account.email, account.password, dispatchAction, isFromTickets, navigate, isFromManagement);
+      }
+
+    }
     snackbarRef.current.show();
 
     // if (isValid) {
@@ -58,22 +77,38 @@ const Login = (isFromTickets) => {
     var code = e.target.value;
     if (code.length === 6) {
       registerUser(account.email, account.password, dispatchAction, isFromTickets, navigate);
-      
+
       snackbarRef.current.show();
     }
   }
 
   const handleLogIn = () => {
-    logUserIn(account.email, account.password, dispatchAction, isFromTickets, navigate);
-    
+    if (isFromManagement) {
+      loginManager(account.email, account.password, dispatchAction);
+
+    } else {
+      logUserIn(account.email, account.password, dispatchAction, isFromTickets, navigate);
+    }
     snackbarRef.current.show();
   }
 
+
+  useEffect(() => {
+    if (isFromManagement) {
+      getAirlines(setPendingAirlines, setAirlines, dropdownAirlineSearch, selectAirline);
+    }
+
+  }, []);
+
+  const onSearchAirline = () =>
+    getAirlines(setPendingAirlines, setAirlines, dropdownAirlineSearch);
+
+
   const snackbarRef = useRef(null);
-  const validateInput = (name,value) => {
+  const validateInput = (name, value) => {
     switch (name) {
       case "email":
-        if (value !== undefined && value.length!==0 && value.conta) {
+        if (value !== undefined && value.length !== 0 && value.conta) {
           setIsAllValid(true)
         } else {
           setIsAllValid(false)
@@ -81,7 +116,7 @@ const Login = (isFromTickets) => {
         break;
 
       case "password":
-        if (value !== undefined && value.length!==0) {
+        if (value !== undefined && value.length !== 0) {
           setIsAllValid(true)
         } else {
           setIsAllValid(false)
@@ -89,7 +124,7 @@ const Login = (isFromTickets) => {
         break;
 
       case "confirmPassword":
-        if (value !== undefined && value.length!==0) {
+        if (value !== undefined && value.length !== 0) {
           setIsAllValid(true)
         } else {
           setIsAllValid(false)
@@ -111,9 +146,9 @@ const Login = (isFromTickets) => {
           <div className={cn("h3", styles.title)}>Registration</div>
 
           <br />
-          {error && <span className={styles.error}>{errorText}</span>}
+          {(error || managerError )&& <span className={styles.error}>{isFromManagement ? managerErrorText : errorText}</span>}
           <TextInput
-        
+
             className={cn(styles.form)}
             onClickFunc={handleSubmitEmail}
             placeholder="Your email"
@@ -158,7 +193,7 @@ const Login = (isFromTickets) => {
           <div className={cn("h3", styles.title)}>Sign In</div>
           <br></br>
           <form className={styles.form}>
-          {error && <span className={styles.error}>{errorText}</span>}
+            {(error||managerError) && <span className={styles.error}>{isFromManagement ? managerErrorText : errorText}</span>}
             <TextInput
               className={styles.field}
               name="email"
@@ -178,9 +213,15 @@ const Login = (isFromTickets) => {
               onChange={onInputChange}
             />
             <br />
-            <button disabled={pending || !isAllValid} type="button" className={cn("button", styles.button)}
+            <button disabled={(pending || managerPending) || !isAllValid} type="button" className={cn("button", styles.button)}
               onClick={handleLogIn}>
-              {pending ? <Loader></Loader> : "Sign in"}
+              {(pending || managerPending) ? <Loader></Loader> : "Sign in"}
+            </button>
+            <button type="button" className={cn("button", styles.button_back)}
+              onClick={() => {
+                dispatch({ type: "SIGN_UP" });
+              }}>
+              Register
             </button>
           </form>
           <div className={styles.foot}>
@@ -193,14 +234,14 @@ const Login = (isFromTickets) => {
       {
         state.visibleConfirmation &&
         <div className={styles.item}>
-          <div className={cn("h3", styles.title)}>
-            Password
+          <div className={cn(isFromManagement ? "h4" : "h3", styles.title)}>
+            Password {isFromManagement && "and company selection"}
           </div>
           <br />
           <form className={styles.form}>
             <div className={styles.variants}>
               <TextInput
-                className={styles.field}
+                className={cn(styles.field, styles.text__input)}
                 name="password"
                 type="password"
                 placeholder="Password"
@@ -211,7 +252,7 @@ const Login = (isFromTickets) => {
               />
               <br />
               <TextInput
-                className={styles.field}
+                className={cn(styles.field, styles.text__input)}
                 name="confirmPassword"
                 type="password"
                 placeholder="Confirm password"
@@ -219,13 +260,44 @@ const Login = (isFromTickets) => {
                 onChange={onInputChange}
                 view
               />
-              {error && <span className={styles.error}>{errorText}</span>}
+              {isFromManagement &&
+                <div>
+                  <TextInput
+                    className={cn(styles.field, styles.text__input)}
+                    name="name"
+                    type="text"
+                    placeholder="Your name"
+                    required
+                    onChange={onInputChange}
+                  />
+                  <TextInput
+                    className={cn(styles.field, styles.text__input)}
+                    name="surname"
+                    type="text"
+                    placeholder="Your surname"
+                    required
+                    onChange={onInputChange}
+                  />
+                  <DropdownWithSearch
+                    className={cn(styles.dropdown)}
+                    value={selectedAirline}
+                    disabled
+                    setValue={selectAirline}
+                    options={airlines}
+                    dropdownValue={dropdownAirlineSearch}
+                    setDropdownValue={setDropdownAirlineSearch}
+                    onSearch={onSearchAirline}
+                    isString={true}
+                  />
+
+                </div>}
+              {(error || managerError) && <span className={styles.error}>{isFromManagement ? managerErrorText : errorText}</span>}
             </div>
-            <button disabled={pending} type="button" className={cn("button", styles.button)}
-              onClick={ handleSubmitPassword }>
-              
+            <button disabled={pending || managerPending} type="button" className={cn("button", styles.button)}
+              onClick={handleSubmitPassword}>
+
               {/*pending ? <Loader></Loader> : "Send OTP"*/}
-                {pending ? <Loader></Loader> : "Sign up"}
+              {pending || managerPending ? <Loader></Loader> : "Sign up"}
             </button>
           </form>
         </div>
@@ -245,7 +317,16 @@ const Login = (isFromTickets) => {
           </form>
         </div>
       }
-      {error ?
+      {
+        state.visibleInfo &&
+        <div className={cn(styles.item)}>
+          <div className={cn("h4", styles.title)}>
+            Success. 👌🏻 <br></br> Please, wait till our administrator confirm your account
+          </div>
+          <div className={styles.info}>{`When your account will be ready, we send you confirmation to ${account.email}`}</div>
+        </div>
+      }
+      {(error || managerError) ?
         <Snackbar
           ref={snackbarRef}
           message="An error occured"

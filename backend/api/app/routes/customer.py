@@ -4,7 +4,7 @@ from app.models.bookings import *
 from app.models.user import User, Passport, ForeignPassport
 from app.helpers.validation import password_check, validate_account, check_mail, validate_login, validate_passport, validate_phone
 from flask_bcrypt import Bcrypt
-
+from sqlalchemy import text
 
 user = Blueprint('user', __name__)
 flaskbcrypt = Bcrypt(current_app)
@@ -13,7 +13,7 @@ flaskbcrypt = Bcrypt(current_app)
 @user.route("/@me")
 def get_current_user():
     user_id = session.get("user_id")
-    print(user_id)
+    
     if not user_id:
         return jsonify({"error": "Unauthorized"})
 
@@ -169,12 +169,29 @@ def add_user_passport():
 
 @user.route("/check-user-mail")
 def check_user_email():
-    email = request.args.get("email", default="", type=str)
-
+    try:
+        email = request.args.get("email", default="", type=str) 
+    except KeyError:
+        return {'error': 'All fiels must be filled'}
+    
+    try:
+        is_from_manager = request.args.get("is_manager", default="", type=str) 
+    except KeyError:
+        is_from_manager = False
+        
     if not check_mail(email):
         return {"error": "Invalid E-mail"}
-
-    user_exists = User.query.filter_by(email=email).first() is not None
+    
+    if is_from_manager:
+        with db.engine.connect() as connection:
+            user_login = connection.execute(text('''
+                                               SELECT id FROM airlines.airline_manager WHERE email='{email}' LIMIT 1;
+                                               '''.format(email=email)))
+            
+            user_exists = len([dict(row) for row in user_login])!=0
+            
+    else:
+        user_exists = User.query.filter_by(email=email).first() is not None
 
     if user_exists:
         return jsonify({"error": "A user with this address already exists"}), 409
@@ -184,10 +201,10 @@ def check_user_email():
     })
 
 
-@user.route("/check-user-pass", methods=["POST"])
+@user.route("/check-user-pass")
 def check_user_pass():
     try:
-        password = request.json["password"]
+        password = request.args.get("password", default="", type=str)
     except KeyError:
         return {'error': 'All fiels must be filled'}
     
@@ -241,7 +258,7 @@ def login_user():
         return jsonify({"error": "Incorrect login or password"})
 
     session["user_id"] = user.id
-    print(user.id)
+
     return jsonify({
         "id": user.id,
         "email": user.email
@@ -250,6 +267,5 @@ def login_user():
 
 @user.route("/logout", methods=["POST"])
 def logout_user():
-    print(session.get("user_id"))
     session.pop("user_id")
     return "200"

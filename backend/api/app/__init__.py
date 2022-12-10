@@ -16,6 +16,9 @@ def create_app():
         
         from app.routes.tickets import tickets
         app.register_blueprint(tickets)
+        
+        from app.routes.dashboard import dashboard
+        app.register_blueprint(dashboard)
     
     return app
 

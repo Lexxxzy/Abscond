@@ -54,9 +54,9 @@ export const getUserInfo = async (dispatchAction) => {
 export const updateUserInfo = async (dispatchAction, newPhone, newlogin) => {
   dispatchAction(updateInfoStart())
   try {
-    const resp = await server.patch(serverIp + "/@me/info/add", { 
-      "phone_number": newPhone, 
-      "login": newlogin 
+    const resp = await server.patch(serverIp + "/@me/info/add", {
+      "phone_number": newPhone,
+      "login": newlogin
     });
 
     if (resp.data.error != null) {
@@ -114,10 +114,10 @@ export const setUserDocuments = async (passport, dispatchAction) => {
   }
 }
 
-export const checkEmail = async (email, dispatchAction) => {
+export const checkEmail = async (email, dispatchAction, is_from_manager) => {
   dispatchAction(logInStart);
   try {
-    const resp = await server.get(serverIp + "/check-user-mail", { params: { email: email } });
+    const resp = await server.get(serverIp + "/check-user-mail", { params: { email: email, is_manager: is_from_manager } });
 
     if (resp.data.error != null) {
       dispatchAction(logInError({ "error": "Wrong E-mail" }));
@@ -138,22 +138,18 @@ export const checkEmail = async (email, dispatchAction) => {
 export const checkPassword = async (password, dispatchAction) => {
   dispatchAction(logInStart);
   try {
-    const resp = await server.post(`${serverIp}/check-user-pass`, {
-      password,
-    });
+    const resp = await server.get(`${serverIp}/check-user-pass`, { params: { password: password } });
 
     if (resp.data.result !== 'Valid') {
       dispatchAction(logInError({ "error": resp.data.result }));
-
       return false;
     }
 
     dispatchAction(logInNext());
-
     return true;
+
   } catch {
     dispatchAction(logInError({ "error": "An error occurred" }));
-
     return true;
   }
 
@@ -171,7 +167,7 @@ export const logUserIn = async (email, password, dispatchAction, isFromTickets, 
     else {
       dispatchAction(logInSuccess(resp.data));
       window.location.href = "/"
-      
+
     }
 
 
@@ -180,7 +176,7 @@ export const logUserIn = async (email, password, dispatchAction, isFromTickets, 
   }
 };
 
-export const registerUser = async (email, password, dispatchAction, isFromTickets, navigate) => {
+export const registerUser = async (email, password, dispatchAction, isFromTickets, navigate, isFromManagement) => {
   try {
     const resp = await server.post(`${serverIp}/register`, {
       email,
@@ -192,7 +188,8 @@ export const registerUser = async (email, password, dispatchAction, isFromTicket
     }
     else {
       dispatchAction(logInSuccess(resp.data));
-      window.location.href = "/"
+
+      window.location.href = "/airlines/dashboard";
     }
 
   } catch {

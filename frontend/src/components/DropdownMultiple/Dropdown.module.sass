@@ -2,6 +2,7 @@
 
 .dropdown
     position: relative
+    
     z-index: 3
     &.active
         z-index: 10
@@ -16,6 +17,7 @@
 
 .head
     position: relative
+    overflow-x: hidden
     height: 48px
     padding: 0 48px 0 16px
     border-radius: 12px
@@ -38,6 +40,11 @@
     overflow: hidden
     text-overflow: ellipsis
     white-space: nowrap
+    max-width: 10px
+
+.crop
+    
+    overflow: hidden
 
 .arrow
     position: absolute
@@ -61,10 +68,9 @@
 
 .body
     position: absolute
+    overflow-y: scroll
+    height: 8.5rem
     top: calc(100% + 2px)
-    overflow-y: auto
-    max-height: 8.5rem
-    min-height: fit-content
     left: 0
     right: 0
     padding: 8px 0

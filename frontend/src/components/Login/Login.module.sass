@@ -5,6 +5,7 @@
     
 .item
     display: none
+    min-width: 20rem
     &:first-child
         display: block
     &.active
@@ -19,6 +20,7 @@
 
 .title
     text-align: center
+    min-width: 17rem
 
 .info
     margin-top: 18px
@@ -42,9 +44,17 @@
 
 .form
     margin-top: 8px
+    min-width: 17rem
     & > .button
-        width: 100%
-        margin-top: 12px
+            width: 100%
+            margin-top: 12px
+    & > .button_back
+            width: 100%
+            margin-top: 12px
+            background-color: $n2
+            &:hover
+                background-color: $n3
+    
 
 .foot
     margin-top: 32px
@@ -130,3 +140,10 @@
     margin-top: 10px
     margin-bottom: 10px
     font-size: 12px
+
+.text__input
+    margin-bottom: 1rem
+
+.dropdown
+    
+

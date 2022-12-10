@@ -1,0 +1,51 @@
+@import ../../styles/helpers
+
+.section
+    padding-top: 80px
+    +d
+        padding-top: 64px
+    +m
+        padding-top: 32px
+
+.container
+    display: flex
+    align-items: flex-start
+    +t
+        display: block
+
+.wrapper
+    padding-left: 128px
+    flex-grow: 1
+    +x
+        padding-left: 64px
+    +d
+        padding-left: 32px
+    +t
+        padding-left: 0
+
+.link
+    display: flex   
+    align-items: center
+    +button-2
+    color: $n4
+    transition: color .2s
+    svg
+        margin-right: 16px
+        fill: $n4
+    &:hover,
+    &.active
+        color: $n2
+        svg
+            fill: $n2
+        +dark
+            color: $n8
+            svg
+                fill: $n8
+    &:not(:last-child)
+        margin-bottom: 40px
+
+.rotate
+    transform: rotate(180deg)
+
+.svg__margin
+    margin-left: 0.2rem
