@@ -44,7 +44,7 @@ const CheckoutComplete = ({ className, items }) => {
           <Link className={cn("button-stroke", styles.button)} to="/#">
             Home
           </Link>
-          <Link className={cn("button", styles.button)} to="/">
+          <Link className={cn("button", styles.button)} to="/bookings">
             My tickets
           </Link>
         </div>

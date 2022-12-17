@@ -104,7 +104,6 @@ def validate_input(*args):
 
     return "ALL_VALID"
 
-
 def validate_phone(phone_number):
     validate_phone_number_pattern = "^\\+?[1-9][0-9]{7,14}$"
     match_obj = re.match(validate_phone_number_pattern, phone_number)

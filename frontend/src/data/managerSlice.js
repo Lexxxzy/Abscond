@@ -55,10 +55,19 @@ export const managerSlice = createSlice(
                 state.managerInfo.managerIsLogedIn = action.payload;
             },
             
+            setManagerError: (state,action) => {
+                state.managerErrorText = action.payload;
+                state.managerError = true;
+            },
+
+            unsetManagerError: (state) => {
+                state.managerErrorText = "";
+                state.managerError = false;
+            }
         }
     }
 )
 
 export const { managerLogInStart, managerLogInNext, managerLogInSuccess, managerLogInError, 
-    managerLogInCancelled, managerLogOut, setManagerLogedInStatus} = managerSlice.actions;
+    managerLogInCancelled, managerLogOut, unsetManagerError, setManagerLogedInStatus, setManagerError} = managerSlice.actions;
 export default managerSlice.reducer;

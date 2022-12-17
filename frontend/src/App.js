@@ -17,6 +17,7 @@ import Directions from "./screens/Directions";
 import { LoginManager } from "./components/LoginManager";
 import { Dashboard } from "./components/Dashboard";
 import { isManagerLoggedIn } from "./logic/apiCallsDashboard";
+import Bookings from "./components/Bookings";
 
 function App() {
   const { managerIsLogedIn } = useSelector((state) => state.manager.managerInfo)
@@ -123,6 +124,14 @@ function App() {
                 </Page>
               }
             />
+
+            <Route exact path="/bookings"
+            element={
+              <Page>
+                <Bookings />
+              </Page>
+            }
+          />
 
             {/*<Route exact path="/wishlists" 
                   element={

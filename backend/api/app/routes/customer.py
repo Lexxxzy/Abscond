@@ -242,7 +242,28 @@ def register_user():
         "id": new_user.id,
         "email": new_user.email
     })
+    
 
+@user.route('/@me/bookings')
+def get_bookings():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"})
+    
+    try:
+        with db.engine.connect() as connection:
+            bookings = connection.execute(text('''
+                                               SELECT * FROM customer.get_bookings('{user_id}');
+                                               '''.format(user_id=user_id)))
+            
+            return jsonify([dict(row) for row in bookings])
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Some error occured"}), 500
+    
+    
 
 @user.route('/login', methods=["POST"])
 def login_user():

@@ -1,11 +1,11 @@
 import axios from "axios";
 import { buyTicketError, buyTicketStart, buyTicketSuccess, cancelTicket, chooseTicket, findTicketError, findTicketStart, findTicketSuccess } from "../data/ticketSlice";
+import { serverIp } from "./consts";
 
 const server = axios.create({
   withCredentials: true,
 });
 
-const serverIp = "http://127.0.0.1:5000";
 
 export const getCities = async (city) => {
   try {
@@ -103,7 +103,7 @@ export const deleteTicket = async (ticketId, dispatchAction) => {
   }
 }
 
-export const buyTicket = async (ticket_id, dispatchAction, passport, navigate, url_to) => {
+export const buyTicket = async (ticket_id, flight_date, dispatchAction, passport, navigate, url_to) => {
   dispatchAction(buyTicketStart())
   try {
 
@@ -113,9 +113,10 @@ export const buyTicket = async (ticket_id, dispatchAction, passport, navigate, u
         "name": passport.name,
         "surname": passport.surname,
         "gender": passport.gender,
-        "ticket_id": ticket_id
+        "ticket_id": ticket_id,
+        "flight_date": flight_date
       })
-      
+      console.log(flight_date)
     if (resp.data.error != null) {
       dispatchAction(buyTicketError(resp.data.error))
 

@@ -6,6 +6,7 @@ import TextInput from "../../TextInput";
 import Snackbar, { SnackbarType } from "../../Snackbar";
 import { useDispatch, useSelector } from "react-redux";
 import { buyTicket } from "../../../logic/apiCallsTickets";
+import moment from "moment";
 
 const cards = [
   {
@@ -21,7 +22,7 @@ const cards = [
 const CreditCard = ({ className, buttonUrl, passport, genderOption }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { pickedTicketId } = useSelector((state) => state.ticket)
+  const { pickedTicketId,searchInfo } = useSelector((state) => state.ticket)
   const [error,setError] = useState(null)
 
   const [card, setCard] = useState({
@@ -44,7 +45,13 @@ const CreditCard = ({ className, buttonUrl, passport, genderOption }) => {
       snackbarRef.current.show();
       return 1
     }
-    buyTicket(pickedTicketId, dispatch, passport, navigate, buttonUrl)
+    const flight_date = moment(searchInfo.timeFlightFrom).format('MM.DD.YYYY')
+    
+    if (flight_date === "Invalid date") {
+      return 1
+    }
+
+    buyTicket(pickedTicketId, flight_date, dispatch, passport, navigate, buttonUrl)
     setError(false);
     snackbarRef.current.show();
   }

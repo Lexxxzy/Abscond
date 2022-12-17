@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import cn from "classnames";
 import styles from "./AddTicket.module.sass";
 import Icon from '../../Icon';
 import Dropdown from '../../Dropdown';
 import DropdownMultiple from '../../DropdownMultiple';
 import DropdownWithSearch from '../../DropdownWithSearch';
-import { getAirports } from '../../../logic/apiCallsDashboard';
+import { addTicket, getAirports } from '../../../logic/apiCallsDashboard';
 import moment from "moment";
+import { useDispatch, useSelector } from 'react-redux';
+import { setManagerError, unsetManagerError } from '../../../data/managerSlice';
+import Snackbar, { SnackbarType } from '../../Snackbar';
 
 const optionsWeek = ["Even", "Odd"];
 const optionsAdditional = ["Meals Included", "Transfer from airport", "Travelling with pets", "Inflight WiFi",];
 const optionsWeekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export const AddTicket = () => {
+    const { managerError, managerErrorText } = useSelector((state) => state.manager)
+    const dispatch = useDispatch();
+
     const [departureAirports, setDepartureAirports] = useState([]);
     const [departureAirport, setDepartureAirport] = useState({});
 
@@ -29,10 +35,12 @@ export const AddTicket = () => {
     const [price, setPrice] = useState();
     const [ticketsAmount, setTicketsAmount] = useState();
     const [flightDuration, setFlightDuration] = useState();
-    
-    useEffect(() => { 
-        getAirports(setPending, setDepartureAirports, dropdownDepartureSearch, setDepartureAirport); 
-        getAirports(setPending, setArrivalAirports, dropdownArrivalSearch, setArrivalAirport); 
+
+    const [newTicketId, setNewTicketId] = useState();
+    const snackbarRef = useRef(null);
+    useEffect(() => {
+        getAirports(setPending, setDepartureAirports, dropdownDepartureSearch, setDepartureAirport);
+        getAirports(setPending, setArrivalAirports, dropdownArrivalSearch, setArrivalAirport);
     }, [])
 
     const handleKeyUp = (e) => {
@@ -54,26 +62,56 @@ export const AddTicket = () => {
         return /^\d+$/.test(str);
     }
 
-    const onSearchDepartureAirport = () => 
+    const onSearchDepartureAirport = () =>
         getAirports(setPending, setDepartureAirports, dropdownDepartureSearch);
-    
-    const onSearchArrivalAirport = () => 
+
+    const onSearchArrivalAirport = () =>
         getAirports(setPending, setArrivalAirports, dropdownArrivalSearch);
 
     // TODO
     const handleAddTicket = () => {
-        const flight_duration = moment(flightDuration.replace(/\D/g,''),"hmm").format('HH:mm')
-        if (flight_duration==="Invalid date")
-        {
-            console.log("error")
+        if (!(departureAirport && arrivalAirport && flightWeek &&
+            weekdays && departureTime && additionalOptions &&
+            price && flightDuration && ticketsAmount)) {
+            dispatch(setManagerError("All fields must be filled"))
+
+            return false
+        } 
+        dispatch(unsetManagerError())
+
+        const flightDurationOnluDigits = flightDuration.replace(/\D/g, '')
+        let flight_duration = moment(flightDurationOnluDigits, "hmm").format('HH:mm')
+
+        if (flight_duration === "Invalid date") {
+            flight_duration = moment(flightDurationOnluDigits, "mm").format('HH:mm')
+
+            if (flight_duration === "Invalid date") {
+                dispatch(setManagerError("Invalid date in flight duration field"))
+
+                return false
+            }
+
+            return false
         }
 
-        console.log({departureAirport, arrivalAirport, flightWeek, 
-            weekdays, departureTime, additionalOptions, 
-            price, flight_duration, ticketsAmount})
+        if(departureAirport.airport_code === arrivalAirport.airport_code)
+        {
+            dispatch(setManagerError("Departure and arrival airport must be different!"))
+            return false
+        }
+        
+        const ticketInfo = {
+            departureAirport, arrivalAirport, flightWeek,
+            weekdays, departureTime, additionalOptions,
+            price, flight_duration, ticketsAmount
+        }
+
+        addTicket(ticketInfo, dispatch, setNewTicketId, snackbarRef)
+        
     }
 
     return (
+        <>
         <form className={styles.section}>
             <div className={styles.head}>
                 <div className={cn("h2", styles.title)}>Add Ticket</div>
@@ -113,8 +151,8 @@ export const AddTicket = () => {
                         <div className={styles.row}>
                             <div className={styles.col}>
                                 <div className={styles.label}>Departure Airport</div>
-                                
-                            <DropdownWithSearch
+
+                                <DropdownWithSearch
                                     className={styles.dropdown}
                                     value={departureAirport}
                                     disabled
@@ -179,7 +217,7 @@ export const AddTicket = () => {
                                 <input
                                     className={styles.input}
                                     name="price"
-                                    onChange={(e) =>setPrice(e.target.value)}
+                                    onChange={(e) => setPrice(e.target.value)}
                                     type="text"
                                     maxLength={15}
                                     placeholder="29999"
@@ -187,17 +225,22 @@ export const AddTicket = () => {
                                 />
                             </div>
                             <div className={styles.col}>
-                            <div className={styles.label}>Tickets amount</div>
-                            <input
-                                className={styles.input}
-                                name="amount"
-                                onChange={(e) =>setTicketsAmount(e.target.value)}
-                                type="text"
-                                maxLength={4}
-                                placeholder="180"
-                                required
-                            />
-                        </div>
+                                <div className={styles.label}>Tickets amount</div>
+                                <input
+                                    className={styles.input}
+                                    name="amount"
+                                    onChange={(e) => setTicketsAmount(e.target.value)}
+                                    type="text"
+                                    maxLength={4}
+                                    placeholder="180"
+                                    required
+                                />
+                            </div>
+                            {managerError && <div className={styles.col}>
+                                <div className={styles.label__error}>Error!</div>
+
+                                <span className={styles.error}>{managerErrorText}</span>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -211,6 +254,19 @@ export const AddTicket = () => {
                 </button>
             </div>
 
-        </form>
+        </form>      
+        {managerError ?
+            <Snackbar
+              ref={snackbarRef}
+              message="An error occured"
+              type={SnackbarType.error}
+            /> :
+            <Snackbar
+              ref={snackbarRef}
+              message={`${newTicketId} added successfully`}
+              type={SnackbarType.success}
+            />
+          }
+        </>
     )
 }

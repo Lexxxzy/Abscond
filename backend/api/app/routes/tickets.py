@@ -260,7 +260,6 @@ def buy_ticket():
             passport_name = request.json["name"]
             passport_surname = request.json["surname"]
             passport_gender = request.json["gender"]
-            ticket_id = request.json["ticket_id"]
             validation_result = validate_passport(passport_id=passport_id, issue_date=issue_date,
                                                   passport_name=passport_name, passport_surname=passport_surname,
                                                   gender=passport_gender)
@@ -272,7 +271,9 @@ def buy_ticket():
             passport_id = passport.id
             passport_surname = passport.surname
             passport_name = passport.name
-            ticket_id = request.json["ticket_id"]
+
+        ticket_id = request.json["ticket_id"]
+        flight_date = request.json["flight_date"]
 
     except KeyError:
         return jsonify({"error": 'NOT VALID INPUT'})
@@ -292,12 +293,32 @@ def buy_ticket():
             price = Flight.query.filter_by(
                 flight_id=boaring.flight_id).first().price
 
-            new_booking = Booking(book_date=func.now(), total_amount=price)
-            db.session.add(new_booking)
-            db.session.commit()
+            try:
+                with db.engine.connect() as connection:
+                    connection.execute(text('''
+                                    BEGIN TRANSACTION;
+                                    DO
+                                    $$
+                                    DECLARE
+                                    booking INTEGER;
+                                    BEGIN
+                                        INSERT INTO tickets.booking (book_date, total_amount, flight_on)
+                                                                        VALUES (NOW(), {total_amount}, '{flight_date}')
+                                                                        RETURNING book_id INTO booking;
+                                        UPDATE tickets.ticket
+                                        SET booking_info = booking
+                                        WHERE ticket_id = '{ticket_id}';
 
-            ticket.booking_info = new_booking.book_id
-            db.session.commit()
+                                        UPDATE tickets.flight
+                                        SET amount = amount - 1
+                                        WHERE flight_id = '{flight_id}';
+                                    END;
+                                    $$;
+                                    COMMIT TRANSACTION;
+                                        '''.format(total_amount=price, flight_date=flight_date, ticket_id=ticket_id, flight_id=boaring.flight_id)))
+            except Exception as e:
+                print(e)
+                return jsonify({"error": "Error!"}), 500
 
             return {"moreInfo":
                     {

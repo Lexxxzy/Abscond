@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import styles from "./SearchInput.module.sass";
 import Icon from "../Icon";
@@ -6,7 +6,11 @@ import { useSelector } from "react-redux";
 
 const SearchInput = ({ className, label, empty, onClickFunc,onInput,value, onChange,searchFunc, buttonType="button", ...props }) => {
   const { error } = useSelector((state) => state.user)
-
+  const handleSearchOnKeyDown=(e) => {
+    if (e.key === 'Enter') {
+      searchFunc()
+    }
+  }
   return (
     <div
       className={cn(
@@ -18,7 +22,11 @@ const SearchInput = ({ className, label, empty, onClickFunc,onInput,value, onCha
     >
       {label && <div className={styles.label}>{label}</div>}
       <div className={styles.wrap}>
-        <input className={styles.input} {...props} onChange={(e) => {onInput(e.target.value);searchFunc()}} value={value}/>
+        <input className={styles.input} {...props} 
+        onChange={(e) => {onInput(e.target.value);searchFunc()}} 
+        onKeyDown={(e) => handleSearchOnKeyDown(e)} 
+        value={value}/>
+
           <button type={buttonType} className={styles.toggle} onClick={()=>{onClickFunc()}}>
             <Icon name="search" size="16" />
           </button>

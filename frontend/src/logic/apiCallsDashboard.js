@@ -1,17 +1,18 @@
 import axios from "axios";
-import { managerLogInError, managerLogInSuccess, managerLogOut, setManagerLogedInStatus } from "../data/managerSlice";
+import { managerLogInError, managerLogInSuccess, managerLogOut, setManagerError, setManagerLogedInStatus } from "../data/managerSlice";
 import { logInError, logInSuccess } from "../data/userSlice";
+import { serverIp } from "./consts";
 
 const server = axios.create({
   withCredentials: true,
 });
 
-const serverIp = "http://127.0.0.1:5000/dashboard";
+var dashboardServerIp = serverIp + '/dashboard';
 
 export const getAirports = async (setPending, setAirports, query, setAirport = null) => {
   try {
     setPending(true)
-    const resp = await server.get(`${serverIp}/get-airports`, { params: { airport: query } });
+    const resp = await server.get(`${dashboardServerIp}/get-airports`, { params: { airport: query } });
     if (resp.data.error != null) {
       console.error(resp.data.error)
       setPending(false)
@@ -32,7 +33,7 @@ export const getAirports = async (setPending, setAirports, query, setAirport = n
 export const getAirlines = async (setPending, setAilines, query, selectAirline = null) => {
   try {
     setPending(true)
-    const resp = await server.get(`${serverIp}/get-airlines`, { params: { airline: query } });
+    const resp = await server.get(`${dashboardServerIp}/get-airlines`, { params: { airline: query } });
     if (resp.data.error != null) {
       console.error(resp.data.error)
       setPending(false)
@@ -49,9 +50,9 @@ export const getAirlines = async (setPending, setAilines, query, selectAirline =
   }
 };
 
-export const registerManager = async(email, password, name, surname, airline, dispatch, dispatchAction) => {
+export const registerManager = async (email, password, name, surname, airline, dispatch, dispatchAction) => {
   try {
-    const resp = await server.post(`${serverIp}/manager-register`, {
+    const resp = await server.post(`${dashboardServerIp}/manager-register`, {
       email, password, name, surname, airline
     });
 
@@ -64,13 +65,13 @@ export const registerManager = async(email, password, name, surname, airline, di
 
   } catch (error) {
     console.error({ "error": "An error occurred. Request again later" });
-  
+
   }
 }
 
-export const loginManager = async(email,password,dispatchAction) => {
+export const loginManager = async (email, password, dispatchAction) => {
   try {
-    const resp = await server.post(`${serverIp}/manager-login`, {
+    const resp = await server.post(`${dashboardServerIp}/manager-login`, {
       email, password
     });
 
@@ -84,13 +85,13 @@ export const loginManager = async(email,password,dispatchAction) => {
 
   } catch (error) {
     console.error({ "error": "An error occurred. Request again later" });
-  
+
   }
 }
 
 export const isManagerLoggedIn = async (dispatchAction) => {
   try {
-    const resp = await server.get(serverIp + "/@manager");
+    const resp = await server.get(dashboardServerIp + "/@manager");
 
     if (resp.data.error === "Unauthorized") {
       dispatchAction(managerLogOut())
@@ -107,9 +108,9 @@ export const isManagerLoggedIn = async (dispatchAction) => {
 export const logoutManager = async (dispatchAction) => {
 
   try {
-    await server.post(serverIp + "/manager-logout");
+    await server.post(dashboardServerIp + "/manager-logout");
     dispatchAction(managerLogOut())
-    window.location.href = "/";
+    window.location.href = "/airlines/login";
   } catch {
     console.error("Some error occured");
   }
@@ -118,8 +119,8 @@ export const logoutManager = async (dispatchAction) => {
 
 export const searchTickets = async (setTickets, search) => {
   try {
-    const resp = await server.get(`${serverIp}/tickets`, { params: { query: search } });
-    
+    const resp = await server.get(`${dashboardServerIp}/tickets`, { params: { query: search } });
+
     if (resp.data.error != null) {
       console.error(resp.data.error)
     }
@@ -130,3 +131,46 @@ export const searchTickets = async (setTickets, search) => {
     console.error("Some error occured");
   }
 };
+
+export const addTicket = async (ticketInfo, dispatch, setNewTicketId, snackbarRef) => {
+  try {
+    const resp = await server.post(`${dashboardServerIp}/tickets/add`, ticketInfo);
+
+    if (resp.data.error != null) {
+      dispatch(setManagerError(resp.data.error))
+      console.error(resp.data.error)
+      snackbarRef.current.show();
+    }
+    else {
+      console.log(resp.data)
+      setNewTicketId(resp.data[0]['_flightid'])
+      snackbarRef.current.show();
+    }
+  } catch {
+    console.error("Some error occured");
+  }
+};
+
+export const deleteFlight = async (ticketId, snackbar, setTickets) => {
+  try {
+    const resp = await server.delete(`${dashboardServerIp}/flight/delete`, {
+      headers: {
+        'Access-Control-Allow-Credentials': true
+      },
+      params: {
+        flight_id: ticketId
+      }
+    })
+
+    if (resp.data.success == null) {
+      console.error('An error occured, try again later')
+      return false
+    }
+
+    snackbar.current.show()
+    searchTickets(setTickets, '')
+    return true
+  } catch (err) {
+    console.error("An error occured")
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Flight from '../Flight'
 import styles from './AvailibleTickets.module.sass'
 import cn from "classnames"
@@ -6,14 +6,16 @@ import FlightDashboard from '../Dashboard/FlightDashboard'
 import Icon from '../Icon'
 import SearchInput from '../SearchInput'
 import { searchTickets } from '../../logic/apiCallsDashboard'
+import Snackbar, { SnackbarType } from '../Snackbar'
 
 export const AvailibleTickets = () => {
 	const [search, setSearch] = useState("");
 	const [tickets, setTickets] = useState([]);
 	useEffect(() => {searchForTickets()}, [])
-
-	const searchForTickets = () => searchTickets(setTickets, search)
-
+	
+	const searchForTickets = () => searchTickets(setTickets, search);
+	
+	const snackbarRef = useRef(null);
 	return (
 		<div>
 			<div className={styles.head}>
@@ -30,15 +32,21 @@ export const AvailibleTickets = () => {
 					onInput={setSearch}
 					value={search}
 					searchFunc={searchForTickets}
+					
 				/>
 			</div>
 			<div className={styles.flights__wrapper}>
 			
 				{tickets.length!==0 && 
 					tickets.items.map((x, index) => (
-					<FlightDashboard className={styles.flight} item={x} key={index} />
+					<FlightDashboard className={styles.flight} item={x} key={index} snackbarRef={snackbarRef} setTickets={setTickets}/>
 				))}
 			</div>
+			<Snackbar
+			ref={snackbarRef}
+			message={`Ticket was deleted`}
+			type={SnackbarType.success}
+		  />
 		</div>
 	)
 }

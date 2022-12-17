@@ -28,7 +28,6 @@ const Flight = ({ className, item, textButton="Buy", onClickBuy=null }) => {
       setVisible(true)
       return false
     }
-    
     pickTicket(dispatch, navigate, item)
   }
   

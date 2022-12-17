@@ -25,6 +25,7 @@ export const ticketSlice = createSlice(
               flightFrom: null,
               flightTo: null,
               timeFlightFrom: null,
+              dateFrom: null
             },
             pending: null,
             error: null,

@@ -1,11 +1,10 @@
 import axios from "axios";
 import { logInStart, logInError, logInSuccess, logOut, setLogedInStatus, setUserInfo, logInNext, loadDocumentsSuccess, loadDocumentsStart, loadDocumentsError, updateInfoStart, updateInfoError } from "../data/userSlice";
+import { serverIp } from "./consts";
 
 const server = axios.create({
   withCredentials: true,
 });
-
-const serverIp = "http://127.0.0.1:5000";
 
 export const isLoggedIn = async (dispatchAction) => {
   try {
@@ -194,6 +193,22 @@ export const registerUser = async (email, password, dispatchAction, isFromTicket
 
   } catch {
     dispatchAction(logInError({ "error": "Something went wrong" }))
+    console.error("Some error occured");
+  }
+}
+
+export const getOrders = async (setBookings) => {
+  try {
+    const resp = await server.get(`${serverIp}/@me/bookings`);
+
+    if (resp.data.error != null) {
+      console.error(resp.data)
+    }
+    else {
+      setBookings(resp.data);
+    }
+
+  } catch {
     console.error("Some error occured");
   }
 }

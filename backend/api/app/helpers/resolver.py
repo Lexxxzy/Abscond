@@ -1,3 +1,5 @@
+ADDITIONAL_OPTIONS = ["Meals Included", "Transfer from airport", "Travelling with pets", "Inflight WiFi"]
+
 def get_path_to_airline_logo(airline):
     path = "/images/content/airlines/"
 
@@ -151,3 +153,43 @@ def get_country_flag_path(country):
         return path + "Japan.svg"
 
     return "NOT_VALID_INPUT"
+
+def convert_week(week):
+    week = week.strip()
+    if week == "Even":
+        return True
+    elif week == "Odd":
+        return False
+    else:
+        return "Invalid week type"
+    
+def convert_days(days):
+    new_days = []
+    for day in days:
+        if day == 'Monday':
+            new_days.append('1')
+        elif day == 'Tuesday':
+            new_days.append('2')
+        elif day == 'Wednesday':
+            new_days.append('3')
+        elif day == 'Thursday':
+            new_days.append('4')
+        elif day == 'Friday':
+            new_days.append('5')
+        elif day == 'Saturday':
+            new_days.append('6')
+        elif day == 'Sunday':
+            new_days.append('7')
+        else:
+            return "Invalid weekday format"
+        
+    return '{' + ','.join(new_days) + '}'
+
+def convert_additional_options(options):
+    if len(options) == 0:
+        return None
+    
+    if not all(option in ADDITIONAL_OPTIONS for option in options):
+        return "Invalid additional options"
+    
+    return '{' + ','.join(map('"{0}"'.format, options)) + '}'
