@@ -68,14 +68,14 @@ const Header = ({ separatorHeader, wide, notAuthorized }) => {
           ) : (
             <User className={styles.user} items={items} />
           )}
-          <button
+          {/*<button
             className={cn(styles.burger, { [styles.active]: visibleNav })}
             onClick={() => setVisibleNav(!visibleNav)}
-          />
+          />*/}
         </div>
       </div>
       <Modal visible={visible} onClose={onModalClose}>
-        <Login isFromTickets={false}/>
+        <Login isFromTickets={false} isFromManagement={false}/>
     </Modal>
     </>
   );

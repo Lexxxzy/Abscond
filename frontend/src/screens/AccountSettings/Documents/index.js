@@ -35,8 +35,7 @@ const Documents = () => {
     passport.id = passport.id.replace(" ", "");
     passport.gender = genderOption === "Man" ? 'M' : 'W';
 
-    setUserDocuments(passport, dispatch);
-    snackbarRef.current.show();
+    setUserDocuments(passport, dispatch,snackbarRef);
   }
 
   const handleKeyUpDate = (e) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Main.module.sass";
@@ -22,6 +22,19 @@ const Main = () => {
     timeFlightFrom: null,
     timeFlightTo: null,
   })
+  const [width, setWidth] = useState(window.innerWidth);
+
+  function handleWindowSizeChange() {
+      setWidth(window.innerWidth);
+  }
+  useEffect(() => {
+      window.addEventListener('resize', handleWindowSizeChange);
+      return () => {
+          window.removeEventListener('resize', handleWindowSizeChange);
+      }
+  }, []);
+
+  const isMobile = width <= 768;
   const onInputChange = (name, value) => {
 
     setTicket(prev => ({
@@ -80,18 +93,16 @@ const Main = () => {
     <div className={cn("section", styles.section)}>
       <div className={cn("container", styles.container)}>
         <div className={styles.preview}>
-          <picture>
+          <picture className={styles.preview__image}>
             <source
               media="(max-width: 767px)"
-              srcSet="/images/content/main-pic-mobile-3.jpg"
+              srcSet="/images/content/back_mobile.svg"
             />
             <img src="/images/content/main-pic-3.jpg" alt="Main" />
           </picture>
           <div className={styles.wrap}>
             <h1 className={cn("hero", styles.title)}>The journey<br /> begins
-
                   <Earth/>
-
             </h1>
             <div className={cn("info", styles.info)}>
               Find and book the unforgettable experience <br /> that will last a lifetime!
@@ -102,8 +113,29 @@ const Main = () => {
             >
               Find tickets
             </Link>
+            {isMobile
+              &&
+              <div className={cn(styles.controls, styles.double__button)}>
+                <button
+                  className={cn(
+                  {
+                    [styles.active]: "Round" === type,
+                  },
+                    styles.button
+                  )} onClick={() => setType("Round")}
+                >
+                  Round trip
+                </button>
+                <button className={cn(styles.button, {
+                  [styles.active]: "OneWay" === type,
+                })} onClick={() => setType("OneWay")}>
+                  One way
+                </button>
+              </div> 
+            }
           </div>
         </div>
+
         <Panel
           className={styles.panel}
           menu
@@ -114,6 +146,7 @@ const Main = () => {
           onSearch={handleSearchTickets}
           onAnimationEnd={() => setSearchShake(false)}
         >
+        {!isMobile &&
           <div className={styles.controls}>
             <button
               className={cn(
@@ -130,8 +163,8 @@ const Main = () => {
             })} onClick={() => setType("OneWay")}>
               One way
             </button>
-            <Guests className={styles.guests} title="1 person" />
-          </div>
+            {/*<Guests className={styles.guests} title="1 person" /> */}
+          </div>}
           <div className={styles.row}>
             <Location
               className={styles.location}

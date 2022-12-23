@@ -19,15 +19,13 @@ const FlightBooking = ({ className, item, snackbarRef, setTickets }) => {
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div className={styles.control}>
                     {/*<div className={styles.info}>
-            <Icon name="tick" size="20" />
-            {item.info}
+                        <Icon name="tick" size="20" />
+                        {item.info}
 
-          </div>*/}
-
+                    </div>*/}
                     <div className={styles.info}>
                         <Icon name="credit-card" size="20" />
                         {item.price} rub.
@@ -41,11 +39,8 @@ const FlightBooking = ({ className, item, snackbarRef, setTickets }) => {
                             <Icon name="clock" size="20" />
                             {moment(item.flight_on).format('ddd, DD MMM')}
                         </div>}
-                       
                 </div>
-
             </div>
-
         </>
     );
 };

@@ -1,0 +1,109 @@
+@import ../../../styles/helpers
+
+.section
+    +d
+        margin-bottom: 46px
+    +m
+        margin-bottom: 64px
+
+.container
+    max-width: 1440px
+    +w
+        padding: 0 40px
+    +t
+        padding: 0
+    +m
+        padding: 0 8px
+
+.card
+    display: flex
+    margin: 0 auto
+    width: 75%
+    min-height: 322px
+    height: 18rem
+    background-color: $n2
+    border-radius: 20px
+    cursor: pointer
+    padding: 40px
+    position: relative
+    &:hover
+        .card__image
+            .image__front
+                margin-top: -50px
+                opacity: 100
+            .image__back
+                opacity: 100
+    +m
+    +d
+    +x
+        width: 90%
+        min-height: 150px
+        height: 15rem
+    
+
+.legend__text
+    color: $n5
+    text-transform: uppercase
+    font-weight: 600
+    span
+        font-size: 1rem
+        padding-left: 3px
+    +m
+        font-size: 12px
+
+.header__text
+    position: absolute
+    max-width: 400px
+    margin-top: 10px
+    color: $n8
+    font-weight: 900
+    font-size: 2.5rem
+    line-height: 1.2
+    +m
+    +x
+    +d
+        position: relative
+        padding-top: 3px
+        font-size: 1.5rem
+
+.button__text
+    font-size: 1rem
+    margin-top: 9rem
+    border-radius: 10px
+    width: 14rem
+    height: 3.4rem
+    background-color: white
+    color: $n1
+    font-weight: 600
+    font-size: 1.2rem
+    +m
+    +d
+    +x
+        width: 10rem
+        height: 3rem
+        border-radius: 7px
+        font-size: 14px
+        margin-top: 1.2rem
+
+.card__image
+    .image__front
+        position: absolute
+        z-index: 10
+        transition: margin .5s ease-in-out
+        margin-top: -10px
+        margin-left: 300px
+        height: 350px
+    .image__back
+        
+        z-index: 0 
+        transition: opacity 1s ease-in-out
+        margin-top: -10px
+        margin-left: 50px
+        height: 350px
+        opacity: 0
+        margin-top: -50px
+    +m
+    +d
+    +x
+        img
+            display: none

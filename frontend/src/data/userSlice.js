@@ -10,7 +10,6 @@ const userInitial = {
     citizen: null,
     spokenLanguage: null,
     passportId: null,
-    foreignPassportId: null,
     wishlist: null,
     boughtTickets: null,
 }
@@ -29,7 +28,6 @@ export const userSlice = createSlice(
                 citizen: null,
                 spokenLanguage: null,
                 passport: null,
-                foreignPassport: null,
                 wishlist: null,
                 boughtTickets: null,
             },
@@ -82,6 +80,7 @@ export const userSlice = createSlice(
             },
             loadDocumentsSuccess: (state, action) => {
                 state.pending = false;
+                state.error = false;
                 state.userInfo.passport = action.payload.passport;
             },
             loadDocumentsError: (state, action) => {
@@ -94,6 +93,7 @@ export const userSlice = createSlice(
                 state.pending = true;
             },
             updateInfoSuccess: (state, action) => {
+                state.error = false;
                 state.userInfo.phoneNumber = action.payload.phone;
                 state.userInfo.login = action.payload.login;
                 state.pending = false;

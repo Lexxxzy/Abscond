@@ -1,13 +1,13 @@
 from flask import Blueprint, request, current_app, jsonify, session
 
 from app.models.user import Passport, User
-from app.helpers.resolver import get_country_flag_path, get_path_to_airline_logo
-from app.helpers.generator import generate_user_boarding_info, get_ten_symbol_uuid
+from app.helpers.resolver import get_path_to_airline_logo
+from app.helpers.generator import generate_user_boarding_info
 from app.helpers.validation import validate_input, validate_passport
 from app.extensions import db
-from app.models.bookings import BoardingInfo, Booking, Flight, Ticket, City
+from app.models.bookings import BoardingInfo, Flight, Ticket, City
 from flask_bcrypt import Bcrypt
-from sqlalchemy import text, func
+from sqlalchemy import text
 from datetime import datetime, timedelta
 
 tickets = Blueprint('tickets', __name__, url_prefix='/tickets')
@@ -31,8 +31,11 @@ def get_tickets():
     except KeyError:
         return {'error': 'All fiels must be filled'}, 400
 
-    arrivalDate = request.args.get("arrivalDate", default="", type=str)
-
+    try:
+        arrivalDate = request.args.get("arrivalDate", default="", type=str)
+    except KeyError:
+        arrivalDate = ''
+        
     departure_city = departure_city.split(',')[0].strip()
     arrival_city = arrival_city.split(',')[0].strip()
 
@@ -62,53 +65,41 @@ def get_tickets():
 
         with db.engine.connect() as connection:
             # SEARCH FOR ALL TICKETS TWO WAY
-            search_result = connection.execute(text('''
-                                            SELECT
-                                                f.flight_id,
-                                                f.departure_time,
-                                                f.departure_time+f.duration AS arrival_time,
-                                                depart.city AS city_from,
-                                                arrival.city AS city_to,
-                                                f.price,
-                                                f.duration,
-                                                f.airline,
-                                                f.departure_airport,
-                                                f.arrival_airport
-                                            FROM tickets.flight f
-                                            JOIN tickets.airport depart
-                                                ON f.departure_airport = depart.airport_code
-                                            JOIN tickets.airport arrival
-                                                ON f.arrival_airport = arrival.airport_code
-                                            WHERE ((depart.city = '{dc}' AND arrival.city = '{ac}') OR
-                                                   (depart.city = '{ac}' AND arrival.city = '{dc}'));
-                                            '''.format(dc=depart_city_code.city_code, ac=arrival_city_code.city_code)))
+            one_way_select = connection.execute(text('''
+                            SELECT * FROM tickets.get_ticket_one_way('{dc}', '{ac}', '{dt}');
+                            '''.format(dc=depart_city_code.city_code, ac=arrival_city_code.city_code, dt=departurel_date)))
+            if arrivalDate != '':
+                back_way_select = connection.execute(text('''
+                                SELECT * FROM tickets.get_ticket_one_way('{ac}', '{dc}', '{dt}');
+                                '''.format(dc=depart_city_code.city_code, ac=arrival_city_code.city_code, dt=arrivalDate)))
 
             one_way = []
             back_way = []
 
-            for row in search_result:
-                if (row.city_from == depart_city_code.city_code and row.city_to == arrival_city_code.city_code):
-                    one_way.append({
-                        'price': '₽' + str(row.price),
-                        'info': "Meals are included",
-                        'dateFrom': departurel_date,
-                        'logo': get_path_to_airline_logo(row.airline),
-                        'flight_id': row.flight_id,
-                        'directions': [
-                            {
-                                'airportIdFrom': row.departure_airport,
-                                'airportIdTo': row.arrival_airport,
-                                'flightLength': str(row.duration),
-                                'flightFrom': row.city_from,
-                                'cityFrom': departure_city,
-                                'flightTo': row.city_to,
-                                'cityTo': arrival_city,
-                                'timeFlightFrom': str(row.departure_time),
-                                'timeFlightTo': str(row.arrival_time),
-                            },
-                        ]
-                    })
-                elif (row.city_from == arrival_city_code.city_code and row.city_to == depart_city_code.city_code):
+            for row in one_way_select:
+                one_way.append({
+                    'price': '₽' + str(row.price),
+                    'info': "Meals are included",
+                    'dateFrom': departurel_date,
+                    'logo': get_path_to_airline_logo(row.airline),
+                    'flight_id': row.flight_id,
+                    'directions': [
+                        {
+                            'airportIdFrom': row.departure_airport,
+                            'airportIdTo': row.arrival_airport,
+                            'flightLength': str(row.duration),
+                            'flightFrom': row.city_from,
+                            'cityFrom': departure_city,
+                            'flightTo': row.city_to,
+                            'cityTo': arrival_city,
+                            'timeFlightFrom': str(row.departure_time),
+                            'timeFlightTo': str(row.arrival_time),
+                        },
+                    ]
+                })
+
+            if len(one_way) != 0 and back_way != []:
+                for row in back_way_select:
                     back_way.append({
                         'price': '₽' + str(row.price),
                         'info': "Meals are included",
@@ -118,7 +109,7 @@ def get_tickets():
                         'flight_id': row.flight_id,
                         'directions': [
                             {
-                                'flightLength': row.duration,
+                                'flightLength': str(row.duration),
                                 'flightFrom': row.city_from,
                                 'cityFrom': arrival_city,
                                 'flightTo': row.city_to,
@@ -130,27 +121,29 @@ def get_tickets():
                             },
                         ]
                     })
+                
+            if len(back_way) != 0:
+                for i, ticket_to in enumerate(one_way):
+                    ticket_from = back_way[i]
 
-            for i, ticket_to in enumerate(one_way):
-                ticket_from = back_way[i]
+                    ticket_from["directions"].insert(
+                        0, ticket_to["directions"][0])
 
-                ticket_from["directions"].insert(0, ticket_to["directions"][0])
+                    true_flight_length = datetime.strptime(
+                        ticket_from["directions"][0]["flightLength"], '%H:%M:%S')
+                    t = datetime.strptime(
+                        ticket_from["directions"][1]["timeFlightFrom"], '%H:%M:%S')
+                    flight_from_current = timedelta(
+                        hours=t.hour, minutes=t.minute, seconds=t.second)
 
-                true_flight_length = datetime.strptime(
-                    ticket_from["directions"][0]["flightLength"], '%H:%M:%S')
-                t = datetime.strptime(
-                    ticket_from["directions"][1]["timeFlightFrom"], '%H:%M:%S')
-                flight_from_current = timedelta(
-                    hours=t.hour, minutes=t.minute, seconds=t.second)
-
-                """
-                NOTE: Setting right arrival and flight time to back way ticket,
-                      cause data was generated randomly
-                """
-                ticket_from["directions"][1]['timeFlightTo'] = str(
-                    (flight_from_current + true_flight_length).time())
-                ticket_from["directions"][1]['flightLength'] = ticket_from["directions"][0]['flightLength']
-                ticket_from["dateFrom"] = ticket_to["dateFrom"]
+                    """
+                    NOTE: Setting right arrival and flight time to back way ticket,
+                        cause data was generated randomly
+                    """
+                    ticket_from["directions"][1]['timeFlightTo'] = str(
+                        (flight_from_current + true_flight_length).time())
+                    ticket_from["directions"][1]['flightLength'] = ticket_from["directions"][0]['flightLength']
+                    ticket_from["dateFrom"] = ticket_to["dateFrom"]
 
             searched_tickets[1]["items"] += one_way
             searched_tickets[0]["items"] += back_way
@@ -252,7 +245,7 @@ def buy_ticket():
         return jsonify({"error": "Unauthorized"})
 
     try:
-        user = User.query.filter_by(id=user_id).first()
+        User.query.filter_by(id=user_id).first()
         passport = Passport.query.filter_by(owner_id=user_id).first()
         if (passport is None):
             passport_id = request.json["passport_id"]

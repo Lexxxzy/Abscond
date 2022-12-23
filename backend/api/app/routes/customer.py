@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify, session, current_app
 from app.extensions import db
 from app.models.bookings import *
-from app.models.user import User, Passport, ForeignPassport
+from app.models.user import User, Passport
 from app.helpers.validation import password_check, validate_account, check_mail, validate_login, validate_passport, validate_phone
 from flask_bcrypt import Bcrypt
 from sqlalchemy import text
+from datetime import datetime
+import datetime
+from dateutil import parser
 
 user = Blueprint('user', __name__)
 flaskbcrypt = Bcrypt(current_app)
@@ -97,8 +100,6 @@ def get_user_docs():
         return jsonify({"error": "Unauthorized"})
 
     passport = Passport.query.filter_by(owner_id=user_id).first()
-    foreign_passport = ForeignPassport.query.filter_by(
-        owner_id=user_id).first()
 
     passport_info = {
         "id": passport.id,
@@ -108,18 +109,8 @@ def get_user_docs():
         "gender": passport.gender,
     } if passport is not None else None
 
-    foreign_passport_info = {
-        "id": foreign_passport.id,
-        "issue_date": foreign_passport.issue_date,
-        "expiry_date": foreign_passport.expiry_date,
-        "name": foreign_passport.name,
-        "surname": foreign_passport.surname,
-        "gender": foreign_passport.gender,
-    } if foreign_passport is not None else None
-
     return {
         "passport": passport_info,
-        "foreign_passport": foreign_passport_info
     }
 
 
@@ -149,14 +140,20 @@ def add_user_passport():
     validation_result = validate_passport(passport_id=passport_id, issue_date=issue_date,
                                           passport_name=passport_name, passport_surname=passport_surname,
                                           gender=passport_gender)
-
+    
     if validation_result != "ALL_VALID":
         return jsonify({"error": validation_result})
 
     # Deleting the old one
     Passport.query.filter_by(owner_id=user_id).delete()
     db.session.commit()
-    new_passport = Passport(id=passport_id, issue_date=issue_date, name=passport_name,
+    
+    try:
+        issue_date_formated = datetime.strptime(issue_date, '%d-%m-%Y').isoformat()
+    except Exception:
+        return jsonify({"error": 'Invalid date'})
+    
+    new_passport = Passport(id=passport_id, issue_date=issue_date_formated, name=passport_name,
                             surname=passport_surname, gender=passport_gender, owner_id=user_id)
 
     db.session.add(new_passport)
@@ -263,7 +260,73 @@ def get_bookings():
         print(e)
         return jsonify({"error": "Some error occured"}), 500
     
+@user.route('/@me/password-update-date')
+def update_passwd_date():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"})
     
+    try:
+        with db.engine.connect() as connection:
+            password_update_date = connection.execute(text('''
+                                               SELECT password_update_date::VARCHAR FROM customer."user" WHERE id='{user_id}';
+                                               '''.format(user_id=user_id)))
+            
+            update_date = [dict(row) for row in password_update_date][0]
+            
+            if update_date['password_update_date'] != None:
+                    date = parser.parse(update_date['password_update_date']).replace(tzinfo=None)
+                    date = datetime.datetime.now() - date
+                    return jsonify({"password_update_date": '{res} day(s) ago'.format(res=date.days)})
+            else:
+               return jsonify({"password_update_date":"Never"})
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Some error occured"}), 500
+
+@user.route('/@me/update-password', methods=["PUT"])
+def update_passwd():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"})
+    
+    try:
+        old_password = request.json["oldPassword"]
+        new_password = request.json["newPassword"]
+    except KeyError:
+        return {'error': 'All fiels must be filled'}
+    
+    res = password_check(new_password)
+    
+    if (res != 'Valid'):
+        return jsonify({"error": res})
+    
+    try:
+        with db.engine.connect() as connection:
+            user = User.query.filter_by(id=user_id).first()
+            
+            if user is None or not flaskbcrypt.check_password_hash(user.password, old_password):
+                return jsonify({"error": "Old password is incorrent"})
+            
+            if old_password == new_password:
+                return jsonify({"error": "New password must differ from the old one"})
+    
+            hashed_password = flaskbcrypt.generate_password_hash(new_password).decode("utf-8")
+            connection.execute(text('''
+                                    UPDATE customer.user
+                                    SET password = '{new_passwd}', password_update_date=NOW()
+                                    WHERE id = '{user_id}';
+                                    '''.format(user_id=user_id, new_passwd=hashed_password)))
+            
+            return jsonify({'success': 200})
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Some error occured"}), 500
+
 
 @user.route('/login', methods=["POST"])
 def login_user():

@@ -15,8 +15,8 @@ const Main = ({ items, value, setValue }) => {
   const { flightFrom, flightTo, timeFlightFrom, timeFlightTo } = useSelector((state) => state.ticket.searchInfo)
 
   const [ticket, setTicket] = useState({
-    departureCity: "",
-    arrivalCity: "",
+    departureCity: flightFrom ? flightFrom : "",
+    arrivalCity: flightTo ? flightTo : "",
     timeFlightFrom: null,
     timeFlightTo: null,
   })
@@ -43,17 +43,29 @@ const Main = ({ items, value, setValue }) => {
     }));
 
   }
+  const [searchShake, setSearchShake] = useState()
+  
+  function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleSearchTickets = () => {
+    console.log(ticket.departureCity)
     if (value === "Round") {
-      if (ticket.departureCity === null || ticket.arrivalCity === null ||
-        ticket.timeFlightFrom === null || ticket.timeFlightTo === null) {
+      if (!ticket.departureCity || !ticket.arrivalCity ||
+        !ticket.timeFlightFrom || !ticket.timeFlightTo) {
+        setSearchShake(true)
+        delay(800).then(() => setSearchShake(false));
+        console.log("All fields must be filled")
         return 1
       }
     } else {
-      if (ticket.departureCity === null || ticket.arrivalCity === null ||
-        ticket.timeFlightFrom === null) {
+      if (!ticket.departureCity || !ticket.arrivalCity||
+        !ticket.timeFlightFrom) {
+        setSearchShake(true)
+        delay(800).then(() => setSearchShake(false));
         return 1
       }
     }
@@ -77,8 +89,11 @@ const Main = ({ items, value, setValue }) => {
         <Panel
           className={styles.panel}
           classBody={styles.body}
-          classButtonSearch={styles.search}
+          classButtonSearch={cn(styles.search,
+            searchShake===true ? styles.animation : ''
+          )}
           onSearch={handleSearchTickets}
+          onAnimationEnd={() => setSearchShake(false)}
         >
 
 

@@ -1,10 +1,11 @@
 @import ../../../styles/helpers
 
 .section
+    margin-bottom: 64px
     +d
-        margin-bottom: 96px
+        margin-bottom: 32px
     +m
-        margin-bottom: 64px
+        margin-bottom: 32px
 
 .container
     max-width: 1440px
@@ -37,9 +38,13 @@
             border-radius: 0
         +m
             position: static
-            height: 500px
+            height: 520px
             border-radius: 16px 16px 0 0
-            object-position: 50% 100%
+            object-position: 20% 100%
+            background-color: $n1
+            opacity: 100
+            padding-bottom: 20px
+            transform: rotate(300deg)
 
 .wrap
     position: absolute
@@ -53,7 +58,7 @@
     +t
         padding: 80px 40px
     +m
-        padding: 60px 32px
+        padding: 0px 0px
         text-align: center
 
 .title
@@ -65,7 +70,8 @@
         color: $n7
     +m
         min-height: fit-content
-        font-size: 42px
+        font-size: 2.1rem
+        padding-bottom: 1rem
 
 @keyframes focus-in-contract 
 	0% 
@@ -96,7 +102,7 @@
     +t
         margin: -110px 16px 0
     +m
-        margin: -230px 8px 0
+        margin: -350px 8px 0
 
 .body
     margin-top: 32px
@@ -105,18 +111,25 @@
 
 .controls
     display: flex
-    margin-bottom: 16px
+    margin: 0 auto
     +m
+        height: 36px
+        margin-top: 20px
+        width: 100%
         flex-wrap: wrap
+        justify-content: center
+        
+
 .button
     font-size: 14px
     +m
-        margin-bottom: 12px
+        margin-bottom: 6px
         padding: 0 24px
     &:not(:last-child)
         margin-right: 16px
         +m
-            margin-right: 8px
+            margin-right: 0px
+
     &.active
         box-shadow: inset 0 0 0 2px $n6
         background: $n6
@@ -124,6 +137,9 @@
     &:hover
         background: darken($p1, 5)
 
+.find
+    +m
+        display: none
 
 .row
     display: flex
@@ -262,6 +278,13 @@
     path 
       stroke: $n2
       fill: $n2
+  +m
+    background: transparent
+    display: none
+    svg
+        display: none
+        path
+            display: none
 
 
 @keyframes rotation2 
@@ -269,3 +292,29 @@
     margin-left: -0.7em
   to 
     margin-left: 0.3em
+
+
+.double__button
+    width: 8.7rem*2
+    background-color: $n3
+    border-radius: 8px
+    button
+        display: inline-flex
+        justify-content: center
+        align-items: center
+        height: 30px
+        margin-top: 3px
+        width: 8.5rem
+        background: $n3
+        border-radius: 6px
+        +button-1
+        font-size: 14px
+        text-align: center
+        color: $n8
+        transition: all .2s
+        &:hover
+            background: darken($p1, 15)
+        &.disabled
+            opacity: .5
+            pointer-events: none
+            

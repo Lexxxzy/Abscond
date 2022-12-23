@@ -29,17 +29,3 @@ class Passport(db.Model):
     gender = db.Column(db.CHAR(1), nullable=False)
     
     owner_id = db.Column(db.String(32), db.ForeignKey(User.id))
-    
-    
-class ForeignPassport(db.Model):
-    __tablename__ = "foreign_passport"
-    __table_args__ = {'schema': 'customer'}
-    
-    id = db.Column(db.String(9), unique = True, primary_key = True)
-    issue_date = db.Column(db.Date, nullable = False)
-    expiry_date = db.Column(db.Date, nullable = False)
-    name = db.Column(db.String(64), nullable=False)
-    surname = db.Column(db.String(64), nullable=False)
-    gender = db.Column(db.CHAR(1), nullable=False)
-    
-    owner_id = db.Column(db.String(32), db.ForeignKey(User.id))

@@ -84,10 +84,10 @@ const Login = ({ isFromTickets, isFromManagement = false }) => {
 
   const handleLogIn = () => {
     if (isFromManagement) {
-      loginManager(account.email, account.password, dispatchAction);
+      loginManager(account.email, account.password, dispatchAction, snackbarRef);
 
     } else {
-      logUserIn(account.email, account.password, dispatchAction, isFromTickets, navigate);
+      logUserIn(account.email, account.password, dispatchAction, isFromTickets, navigate, snackbarRef);
     }
     snackbarRef.current.show();
   }

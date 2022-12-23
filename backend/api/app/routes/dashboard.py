@@ -3,10 +3,10 @@ import re
 from uuid import uuid4
 from flask import Blueprint, current_app, jsonify, request, session
 from app.extensions import db
-from sqlalchemy import text, func
+from sqlalchemy import text
 from flask_bcrypt import Bcrypt
 from app.helpers.validation import validate_account, validate_input, validate_name, validate_airline_company
-from app.helpers.resolver import get_path_to_airline_logo, convert_week, convert_days,convert_additional_options
+from app.helpers.resolver import get_path_to_airline_logo, convert_week, convert_days, convert_additional_options
 
 dashboard = Blueprint('dashboard', __name__, url_prefix="/dashboard")
 flaskbcrypt = Bcrypt(current_app)
@@ -45,6 +45,8 @@ def get_airlines():
         airline = request.args.get("airline", default="", type=str)
     except KeyError:
         airline = ''
+        
+    airline = re.sub('[^\u0401\u0451\u0410-\u044fa-zA-Z]+', '', airline)
 
     try:
         with db.engine.connect() as connection:
@@ -201,7 +203,7 @@ def add_ticket():
 
     if not manager_id:
         return jsonify({"error": "Unauthorized"})
-    
+
     try:
         additional_options = request.json["additionalOptions"]
         arrival_airport = request.json["arrivalAirport"]["airport_code"]
@@ -212,57 +214,59 @@ def add_ticket():
         price = request.json["price"]
         tickets_amount = request.json["ticketsAmount"]
         weekdays = request.json["weekdays"]
-        
-        if(len(weekdays) == 0):
+
+        if (len(weekdays) == 0):
             return {'error': 'All fiels must be filled'}
-        
+
     except KeyError:
         return {'error': 'All fiels must be filled'}
-    
+
     try:
         datetime.datetime.strptime(departure_time, '%H:%M').time()
     except Exception:
         return {'error': 'Invalid departure time'}
-    
+
     try:
         datetime.datetime.strptime(flight_duration, '%H:%M').time()
     except Exception:
         return {'error': 'Invalid flight duration field'}
-    
-    validation = validate_input(arrival_airport, departure_airport, flight_week, price, tickets_amount)
-    
-    if not validation=="ALL_VALID":
+
+    validation = validate_input(
+        arrival_airport, departure_airport, flight_week, price, tickets_amount)
+
+    if not validation == "ALL_VALID":
         return {'error': validation}
-    
+
     week = convert_week(flight_week)
-    
-    if week=="Invalid week type":
+
+    if week == "Invalid week type":
         return {'error': week}
-    
+
     coverted_flight_days = convert_days(weekdays)
-    
+
     if coverted_flight_days == "Invalid weekday format":
         return {'error': coverted_flight_days}
-    
-    coverted_additional_options = convert_additional_options(additional_options)
-    
+
+    coverted_additional_options = convert_additional_options(
+        additional_options)
+
     if coverted_additional_options == "Invalid additional options":
         return {'error': coverted_additional_options}
-    
+
     try:
         tickets = []
         with db.engine.begin() as connection:
             tickets = connection.execute(text('''
                                                 CALL tickets.add_ticket('{}','{}','{}','{}','{}',{},{},'{}',{},'{}');
                                                 '''.format(departure_time, departure_airport, arrival_airport,
-                                                        coverted_flight_days,flight_duration, 
-                                                        week, price, manager_id, tickets_amount, 
-                                                        coverted_additional_options)))
+                                                           coverted_flight_days, flight_duration,
+                                                           week, price, manager_id, tickets_amount,
+                                                           coverted_additional_options)))
             connection.execute(text('''COMMIT;'''))
 
         tickets = [dict(row) for row in tickets]
-        
-        if(len(tickets) == 1):
+
+        if (len(tickets) == 1):
             return jsonify(tickets)
         else:
             return jsonify({"error": "Some error occured"}), 500
@@ -270,7 +274,7 @@ def add_ticket():
     except Exception as e:
         print(e)
         return jsonify({"error": "Some error occured"}), 500
-    
+
 
 @dashboard.route("/flight/delete", methods=["DELETE"])
 def delete_flight():
@@ -278,15 +282,15 @@ def delete_flight():
 
     if not manager_id:
         return jsonify({"error": "Unauthorized"})
-    
+
     try:
         flight_id = request.args.get("flight_id", default="", type=str)
     except KeyError:
         return {'error': 'All fiels must be filled'}
-    
+
     if flight_id == '' or None:
         return {'error': 'All fiels must be filled'}
-          
+
     flight_id = re.sub('[^\u0401\u0451\u0410\u044fa-zA-Z0-9]+', '', flight_id)
     validation_result = validate_input(flight_id)
 
@@ -299,12 +303,12 @@ def delete_flight():
                             SELECT flight_id FROM tickets.flight 
                             WHERE flight_id='{id}';
                 '''.format(id=flight_id)))
-            
+
             ticket = [dict(row) for row in ticket]
-            
+
             if (ticket == []):
                 return {'error': 'Not valid ticket number'}, 400
-            
+
             connection.execute(text('''
                             DELETE FROM tickets.flight 
                             WHERE flight_id='{id}';
@@ -317,7 +321,6 @@ def delete_flight():
     except Exception as e:
         print(e)
         return jsonify({"error": "Some error occured"}), 500
-
 
 
 @dashboard.route("/manager-logout", methods=["POST"])

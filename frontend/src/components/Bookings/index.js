@@ -25,7 +25,7 @@ const Bookings = () => {
     <div className={cn("section", styles.section)}>
       <div className={cn("container", styles.container)}>
         <div>
-          <div className="h3">Your bookings</div>
+          <div className="h3">Your bookings <img width={"70px"} src="images/content/Tickets.png" alt="Tickets"></img></div>
         </div>
         <br />
 
@@ -49,7 +49,6 @@ const Bookings = () => {
         }
       </div>
       <Modal visible={visible} onClose={onModalClose} >
-
         <BookingTicket flightInfo={bookings[ticketId]} />
       </Modal>
     </div>

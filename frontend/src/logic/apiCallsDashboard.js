@@ -61,6 +61,8 @@ export const registerManager = async (email, password, name, surname, airline, d
     }
     else {
       dispatch({ type: "INFO" });
+
+      window.location.href = "/airlines/dashboard";
     }
 
   } catch (error) {
@@ -69,7 +71,7 @@ export const registerManager = async (email, password, name, surname, airline, d
   }
 }
 
-export const loginManager = async (email, password, dispatchAction) => {
+export const loginManager = async (email, password, dispatchAction, snackbarRef) => {
   try {
     const resp = await server.post(`${dashboardServerIp}/manager-login`, {
       email, password
@@ -77,10 +79,13 @@ export const loginManager = async (email, password, dispatchAction) => {
 
     if (resp.data.error != null) {
       dispatchAction(managerLogInError(resp.data))
+      snackbarRef.current.show();
     }
     else {
       dispatchAction(managerLogInSuccess(resp.data));
+      dispatchAction(managerLogInError({'error': false}));
       window.location.href = "/airlines/dashboard"
+      snackbarRef.current.show();
     }
 
   } catch (error) {

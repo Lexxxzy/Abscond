@@ -16,10 +16,6 @@ const items = [
     title: "Availible tickets",
     icon: "monitor",
   },
-  {
-    title: "Company profile",
-    icon: "user",
-  },
 ];
 
 export const Dashboard = () => {

@@ -11,7 +11,7 @@ def check_mail(email):
     return validate(
         email_address=email,
         check_format=True,
-        check_blacklist=True,
+        check_blacklist=False,
         check_dns=True,
         dns_timeout=10,
         check_smtp=False,
@@ -81,12 +81,14 @@ def validate_passport(passport_id, issue_date, passport_name, passport_surname, 
 
     return "ALL_VALID"
 
+
 def validate_name(*args):
     for value in args:
         if not value.isalpha() or len(value) > 64 or len(value) < 2:
             return "Name must contain only letters and be shorter than 64 characters"
-        
+
     return "ALL_VALID"
+
 
 def validate_input(*args):
     SQL_CODES = ['SELECT', 'UPDATE', 'DELETE', 'INSERT', 'OR',
@@ -104,6 +106,7 @@ def validate_input(*args):
 
     return "ALL_VALID"
 
+
 def validate_phone(phone_number):
     validate_phone_number_pattern = "^\\+?[1-9][0-9]{7,14}$"
     match_obj = re.match(validate_phone_number_pattern, phone_number)
@@ -115,8 +118,8 @@ def validate_phone(phone_number):
 
 
 def validate_login(login):
-    VULNERAVLE_LOGINS = ["admin", "manager", "root", "qwerty", "adm1n", 
-                         "administrator", "user1", "alex", "pos", "demo", 
+    VULNERAVLE_LOGINS = ["admin", "manager", "root", "qwerty", "adm1n",
+                         "administrator", "user1", "alex", "pos", "demo",
                          "dbadmin", "sql", "db2admin", "user", "test", "support",
                          "guest", "postgres", "1234", "r00t"]
     if login.lower() in VULNERAVLE_LOGINS:
@@ -127,20 +130,20 @@ def validate_login(login):
 
     return "ALL_VALID"
 
+
 def validate_airline_company(company):
     if not (company.replace(" ", "").isalpha()):
         return "No such airline"
-    
+
     try:
         with db.engine.connect() as connection:
             company_exists = connection.execute(text('''
                                                SELECT id FROM airlines.company WHERE title='{company}';
                                                '''.format(company=company)))
-            
-            if (len([dict(row) for row in company_exists])==0):
+
+            if (len([dict(row) for row in company_exists]) == 0):
                 return "No such airline"
-            
+
             return "ALL_VALID"
     except Exception:
         return "Some error occured"
-    

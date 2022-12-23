@@ -82,7 +82,6 @@ export const getUserDocuments = async (dispatchAction) => {
     const resp = await server.get(serverIp + "/@me/documents");
     const userDocuments = {
       passport: resp.data.passport,
-      //foreignPassport: resp.data.foreign_passport
     }
 
     dispatchAction(loadDocumentsSuccess(userDocuments))
@@ -93,7 +92,7 @@ export const getUserDocuments = async (dispatchAction) => {
 
 };
 
-export const setUserDocuments = async (passport, dispatchAction) => {
+export const setUserDocuments = async (passport, dispatchAction, snackbarRef) => {
   dispatchAction(loadDocumentsStart());
   try {
     const resp = await server.post(serverIp + "/@me/passport/add",
@@ -102,9 +101,11 @@ export const setUserDocuments = async (passport, dispatchAction) => {
 
     if (resp.data.error != null) {
       dispatchAction(loadDocumentsError(resp.data));
+      snackbarRef.current.show();
     }
     else {
       dispatchAction(loadDocumentsSuccess(resp.data.passport))
+      snackbarRef.current.show();
     }
 
   } catch {
@@ -154,7 +155,7 @@ export const checkPassword = async (password, dispatchAction) => {
 
 };
 
-export const logUserIn = async (email, password, dispatchAction, isFromTickets, navigate) => {
+export const logUserIn = async (email, password, dispatchAction, isFromTickets, navigate, snackbarRef) => {
   try {
     const resp = await server.post(`${serverIp}/login`, {
       email,
@@ -162,11 +163,14 @@ export const logUserIn = async (email, password, dispatchAction, isFromTickets, 
     });
     if (resp.data.error != null) {
       dispatchAction(logInError(resp.data));
+      snackbarRef.current.show();
     }
     else {
       dispatchAction(logInSuccess(resp.data));
-      window.location.href = "/"
+      dispatchAction(logInError({ 'error': false }));
 
+      window.location.href = "/"
+      snackbarRef.current.show();
     }
 
 
@@ -175,7 +179,7 @@ export const logUserIn = async (email, password, dispatchAction, isFromTickets, 
   }
 };
 
-export const registerUser = async (email, password, dispatchAction, isFromTickets, navigate, isFromManagement) => {
+export const registerUser = async (email, password, dispatchAction, isFromTickets, navigate) => {
   try {
     const resp = await server.post(`${serverIp}/register`, {
       email,
@@ -187,8 +191,7 @@ export const registerUser = async (email, password, dispatchAction, isFromTicket
     }
     else {
       dispatchAction(logInSuccess(resp.data));
-
-      window.location.href = "/airlines/dashboard";
+      window.location.href = "/"
     }
 
   } catch {
@@ -213,4 +216,48 @@ export const getOrders = async (setBookings) => {
   }
 }
 
+export const updateUserPassword = async (setErr, oldPassword, newPassword, setVisible) => {
+
+  try {
+    const resp = await server.put(serverIp + "/@me/update-password", {
+      "oldPassword": oldPassword,
+      "newPassword": newPassword
+    });
+
+    if (resp.data.error != null) {
+      setErr({
+        isErrorOccured: true,
+        errText: resp.data.error
+      });
+
+      return false;
+    }
+
+    setErr({
+      isErrorOccured: false,
+      errText: ''
+    });
+    setVisible(false);
+  } catch {
+    console.error("Some error occured");
+  }
+
+};
+
+export const getLastUpdated = async (setLastUpdated) => {
+
+  try {
+    const resp = await server.get(serverIp + "/@me/password-update-date");
+    
+    if (resp.data.error != null) {
+      return false;
+    }
+
+    setLastUpdated(resp.data.password_update_date)
+
+  } catch (resp) {
+    
+  }
+
+};
 export default server

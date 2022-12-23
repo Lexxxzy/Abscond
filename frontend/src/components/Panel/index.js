@@ -6,7 +6,7 @@ import Icon from "../Icon";
 
 const navigation = [
   {
-    title: "Buy tockets",
+    title: "Buy tickets",
     url: "/tickets",
   }
 ];
