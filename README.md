@@ -31,3 +31,10 @@ Dev stack
 <img width="1000" alt="image" src="https://user-images.githubusercontent.com/83035922/209467952-88369a46-bb4b-4b6c-8b36-41b6f7388404.png">
 <img width="1000" alt="image" src="https://user-images.githubusercontent.com/83035922/209468011-1abf5caf-7ab0-4c7e-961d-37cbde117e5a.png">
 <img width="1000" alt="image" src="https://user-images.githubusercontent.com/83035922/209468022-ed7c39e1-9df4-4ae0-8c9f-9e159d701d32.png">
+
+### 6. Fully adaptive
+<div >
+<img style = 'display: inline-block; align: top;' width="400" alt="image" src="https://user-images.githubusercontent.com/83035922/209468542-01c7fa53-3132-45d0-bc7b-1fd29a3a6551.png">
+<img style = 'display: inline-block; align: top;' width="400" alt="image" src="https://user-images.githubusercontent.com/83035922/209468571-4803a8cb-ec48-4853-a577-eeb532380908.png">
+</div>
+
