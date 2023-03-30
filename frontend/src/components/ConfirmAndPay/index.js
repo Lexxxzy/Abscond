@@ -28,7 +28,7 @@ const ConfirmAndPay = ({ className, guests, title, buttonUrl, dates }) => {
   const { pending } = useSelector(state => state.user);
   const { passport, email } = useSelector(state => state.user.userInfo);
   person_info.add(email)
-  
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [login, setLogin] = useState(Array.from(person_info)[0]);
   return (
@@ -78,35 +78,35 @@ const ConfirmAndPay = ({ className, guests, title, buttonUrl, dates }) => {
             </div>
             <div className={styles.field}>
               <div className={styles.label}>Saved contact information</div>
-              {!pending  && <Dropdown
+              {!pending && <Dropdown
                 className={styles.dropdown}
                 value={login}
                 setValue={setLogin}
                 options={Array.from(person_info)}
               />}
-              <br/>
+              <br />
               {!pending &&
                 <>
-                {passport === null ? <PassportForm passport={passport_new} setPassport={setPassport}
-                                                   genderOption={genderOption} setGender={setGender}/>
-                                   : 
-                                   <>
-                                    <div className={styles.label}>Passport</div>
-                                    <Dropdown
-                                      className={styles.dropdown}
-                                      value={passport.id}
-                                      options={[passport.id]}
-                                      />
-                                    </>
-                }
+                  {passport === null ? <PassportForm passport={passport_new} setPassport={setPassport}
+                    genderOption={genderOption} setGender={setGender} />
+                    :
+                    <>
+                      <div className={styles.label}>Passport</div>
+                      <Dropdown
+                        className={styles.dropdown}
+                        value={passport.id}
+                        options={[passport.id]}
+                      />
+                    </>
+                  }
                 </>
-                }
+              }
             </div>
           </div>
         </div>
         <div className={styles.item}>
           {activeIndex === 0 && (
-            <CreditCard className={styles.credit} buttonUrl={buttonUrl} passport={passport_new} genderOption={genderOption}/>
+            <CreditCard className={styles.credit} buttonUrl={buttonUrl} passport={passport_new} genderOption={genderOption} />
           )}
         </div>
       </div>

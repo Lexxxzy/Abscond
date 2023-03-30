@@ -106,8 +106,8 @@ export default function Ticket({ flightInfo, index }) {
                 <Barcode value={moreInfo.barcodeId} options={{
                     width: 1,
                     height: 80,
-                    background: "#141416",
-                    lineColor: "#ffffff",
+                    background: "white",
+                    lineColor: "#000000",
                     marginBottom: 40,
                 }} />
             </div>

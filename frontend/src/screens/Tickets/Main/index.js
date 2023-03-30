@@ -83,7 +83,7 @@ const Main = ({ items, value, setValue }) => {
   return (
     <div className={cn("section-mb80", styles.section)}>
       <div className={styles.bg}>
-        <img src="/images/content/bg-flight-1.jpg" alt="Flight" />
+        <img src="/images/content/bg-flight-1.png" alt="Flight" />
       </div>
       <div className={cn("container", styles.container)}>
         <Panel
@@ -101,7 +101,7 @@ const Main = ({ items, value, setValue }) => {
             <div className={styles.nav}>
               <button
                 className={cn(
-                  "button-stroke button-small", {
+                  "", {
                   [styles.active]: "Round" === value,
                 },
                   styles.link
@@ -109,13 +109,12 @@ const Main = ({ items, value, setValue }) => {
               >
                 Round trip
               </button>
-              <button className={cn("button-stroke button-small", styles.link, {
+              <button className={cn("", styles.link, {
                 [styles.active]: "OneWay" === value,
               })} onClick={() => setValue("OneWay")}>
                 One way
               </button>
             </div>
-            <Guests className={styles.guests} title="1 person" />
           </div>
           <div className={styles.row}>
             <Location

@@ -14,6 +14,8 @@
         padding: 0
     +m
         padding: 0 8px
+    &:hover
+        cursor: grab
 
 .card
     display: flex
@@ -23,10 +25,11 @@
     height: 18rem
     background-color: $n2
     border-radius: 20px
-    cursor: pointer
+    
     padding: 40px
     position: relative
     &:hover
+        cursor: grab
         .card__image
             .image__front
                 margin-top: -50px
@@ -73,7 +76,7 @@
     width: 14rem
     height: 3.4rem
     background-color: white
-    color: $n1
+    color: $p2
     font-weight: 600
     font-size: 1.2rem
     +m

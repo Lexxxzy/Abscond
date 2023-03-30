@@ -6,7 +6,7 @@ import { Range, getTrackBackground } from "react-range";
 
 const Filters = ({ className }) => {
   const stepPrice = 50;
-  const minPrice = 50000;
+  const minPrice = 5000;
   const maxPrice = 300000;
 
   const [values, setValues] = useState([maxPrice]);
@@ -41,7 +41,7 @@ const Filters = ({ className }) => {
                     borderRadius: "4px",
                     background: getTrackBackground({
                       values,
-                      colors: ["#8E8CFF", "#B1B5C3"],
+                      colors: ["#000000", "#B1B5C3"],
                       min: minPrice,
                       max: maxPrice,
                     }),
@@ -60,8 +60,8 @@ const Filters = ({ className }) => {
                   height: "24px",
                   width: "24px",
                   borderRadius: "50%",
-                  backgroundColor: "#8E8CFF",
-                  border: "4px solid #FCFCFD",
+                  backgroundColor: "#000000",
+                  border: "4px solid #000000",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -78,7 +78,7 @@ const Filters = ({ className }) => {
                     fontFamily: "Poppins",
                     padding: "4px 8px",
                     borderRadius: "8px",
-                    backgroundColor: "#141416",
+                    backgroundColor: "#000000",
                   }}
                 >
                   ₽{values[0].toFixed(0)}
@@ -87,7 +87,7 @@ const Filters = ({ className }) => {
             )}
           />
           <div className={styles.scale}>
-            <div className={styles.number}>₽50 000</div>
+            <div className={styles.number}>₽5000</div>
             <div className={styles.number}>₽300 000</div>
           </div>
         </div>

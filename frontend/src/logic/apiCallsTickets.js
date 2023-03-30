@@ -103,7 +103,7 @@ export const deleteTicket = async (ticketId, dispatchAction) => {
   }
 }
 
-export const buyTicket = async (ticket_id, flight_date, dispatchAction, passport, navigate, url_to) => {
+export const buyTicket = async (ticket_id, flight_date, dispatchAction, passport, navigate, url_to, setError) => {
   dispatchAction(buyTicketStart())
   try {
 
@@ -119,13 +119,14 @@ export const buyTicket = async (ticket_id, flight_date, dispatchAction, passport
       console.log(flight_date)
     if (resp.data.error != null) {
       dispatchAction(buyTicketError(resp.data.error))
-
+      setError(true);
       return false
     }
     
     dispatchAction(buyTicketSuccess(resp.data))
+    setError(false);
     navigate(url_to)
-
+    
     return true
   } catch (err) {
     console.error("An error occured")

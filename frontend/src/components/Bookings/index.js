@@ -25,7 +25,7 @@ const Bookings = () => {
     <div className={cn("section", styles.section)}>
       <div className={cn("container", styles.container)}>
         <div>
-          <div className="h3">Your bookings <img width={"70px"} src="images/content/Tickets.png" alt="Tickets"></img></div>
+          <h2 className={styles.header__bookings}>Your bookings </h2>
         </div>
         <br />
 

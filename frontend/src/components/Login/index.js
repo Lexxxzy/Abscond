@@ -250,7 +250,6 @@ const Login = ({ isFromTickets, isFromManagement = false }) => {
                 onChange={onInputChange}
                 autoFocus
               />
-              <br />
               <TextInput
                 className={cn(styles.field, styles.text__input)}
                 name="confirmPassword"

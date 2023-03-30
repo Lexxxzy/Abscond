@@ -51,8 +51,8 @@ const CreditCard = ({ className, buttonUrl, passport, genderOption }) => {
       return 1
     }
 
-    buyTicket(pickedTicketId, flight_date, dispatch, passport, navigate, buttonUrl)
-    setError(false);
+    buyTicket(pickedTicketId, flight_date, dispatch, passport, navigate, buttonUrl, setError)
+    
     snackbarRef.current.show();
   }
 

@@ -8,7 +8,7 @@ const Flights = () => {
     <>
       <Main />
       <CitiesCard/>
-      <Travel />
+      {/* <Travel /> */}
     </>
   );
 };

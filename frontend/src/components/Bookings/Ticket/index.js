@@ -68,8 +68,8 @@ export default function BookingTicket({ flightInfo, index }) {
                 <Barcode value={flightInfo.barcodeid} options={{
                     width: 1,
                     height: 80,
-                    background: "#141416",
-                    lineColor: "#ffffff",
+                    background: "#ffffff",
+                    lineColor: "#141416",
                     marginBottom: 40,
                 }} />
             </div>

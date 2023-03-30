@@ -20,6 +20,7 @@
     align-items: center
 
 .logo
+    margin-top: 5px
     margin-right: 40px
     +d
         margin-right: 32px
@@ -52,19 +53,15 @@
         height: 100vh
         min-height: auto
         padding: 132px 32px 48px
-        background: $n8
+        background: $n2
         visibility: hidden
         opacity: 0
         pointer-events: none
         transition: all .3s
-        +dark
-            background: $n1
         &.active
             visibility: visible
             opacity: 1
             pointer-events: all
-    +dark
-        border-color: $n2
     & > div
         &:first-child
             +t
@@ -75,33 +72,6 @@
 .dropdown
     margin-right: auto
 
-.link
-    margin-left: auto
-    +button-2
-    color: $n4
-    transition: color .2s
-    +t
-        display: none
-    +m
-        display: flex
-        align-items: center
-        margin: 0 -32px
-        padding: 0 32px
-        height: 64px
-        +poppins
-        font-size: 24px
-        font-weight: 600
-    &:hover,
-    &.active
-        color: $n2
-        +m
-            background: none
-            box-shadow: inset 2px 0 0 $p1
-        +dark
-            color: $n6
-            +m
-                background: none
-                color: $n6
     
 .language
     margin-left: 40px
@@ -132,14 +102,16 @@
     color: white
     font-weight: 500
     font-size: 14px
+    color: #000
     svg
+        fill: black
         margin-right: 5px
         margin-bottom: 2px
     &:hover
-        color: black
+        color: $white
         background: $n6
         svg
-            fill: black
+            fill: $white
     +m
         margin-left: 20px
     

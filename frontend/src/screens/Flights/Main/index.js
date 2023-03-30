@@ -14,7 +14,7 @@ import { Earth } from "./earth";
 
 const Main = () => {
   const dispatch = useDispatch();
-  const [type, setType] = useState("Round");
+  const [type, setType] = useState("OneWay");
   const [searchShake, setSearchShake] = useState()
   const [ticket, setTicket] = useState({
     departureCity: "",
@@ -93,19 +93,12 @@ const Main = () => {
     <div className={cn("section", styles.section)}>
       <div className={cn("container", styles.container)}>
         <div className={styles.preview}>
-          <picture className={styles.preview__image}>
-            <source
-              media="(max-width: 767px)"
-              srcSet="/images/content/back_mobile.svg"
-            />
-            <img src="/images/content/main-pic-3.jpg" alt="Main" />
-          </picture>
           <div className={styles.wrap}>
-            <h1 className={cn("hero", styles.title)}>The journey<br /> begins
+            <h1 className={cn("hero", styles.title)}>The journey begins
                   <Earth/>
             </h1>
             <div className={cn("info", styles.info)}>
-              Find and book the unforgettable experience <br /> that will last a lifetime!
+            Cheap flights only with us.
             </div>
             <Link
               className={cn("button", styles.button, styles.find)}
@@ -121,12 +114,12 @@ const Main = () => {
                   {
                     [styles.active]: "Round" === type,
                   },
-                    styles.button
+                    styles.link
                   )} onClick={() => setType("Round")}
                 >
                   Round trip
                 </button>
-                <button className={cn(styles.button, {
+                <button className={cn(styles.link, {
                   [styles.active]: "OneWay" === type,
                 })} onClick={() => setType("OneWay")}>
                   One way
@@ -148,21 +141,21 @@ const Main = () => {
         >
         {!isMobile &&
           <div className={styles.controls}>
-            <button
-              className={cn(
-                "button-stroke button-small", {
-                [styles.active]: "Round" === type,
-              },
-                styles.button
-              )} onClick={() => setType("Round")}
-            >
-              Round trip
-            </button>
-            <button className={cn("button-stroke button-small", styles.button, {
+            <button className={cn("", styles.link, {
               [styles.active]: "OneWay" === type,
             })} onClick={() => setType("OneWay")}>
               One way
             </button>
+            <button
+            className={cn(
+              "", {
+              [styles.active]: "Round" === type,
+            },
+              styles.link
+            )} onClick={() => setType("Round")}
+          >
+            Round trip
+          </button>
             {/*<Guests className={styles.guests} title="1 person" /> */}
           </div>}
           <div className={styles.row}>
